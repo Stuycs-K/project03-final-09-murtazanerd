@@ -2,18 +2,9 @@
 
 This document must be updated daily by EACH group member.
 
-## Player 1
+## Naf
 
-### 2024-01-02 - Brief description
-Expanded description including how much time was spent on task.
-
-### 2024-01-03 - Brief description
-Expanded description including how much time was spent on task.
-
-## Player 2
-
-### 2024-01-02 - Brief description
-Expanded description including how much time was spent on task.
-
-### 2024-01-03 - Brief description
-Expanded description including how much time was spent on task.
+### 2025-01-06 - PROPOSAL.md, README.md, DEVLOG.md
+PROPOSAL.md was completely written and added to the repository. (1 minute)  
+README.md was completely written (exception: The install guide) and added to the repository. (2 minutes)  
+DEVLOG.md has been set-up properly and is now being written on, and will be added to the repository. (1 minute)

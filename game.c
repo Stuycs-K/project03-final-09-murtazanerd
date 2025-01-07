@@ -10,7 +10,7 @@ int main(){
   args: none
 
   either connects to an existing WKP if it was made (second client/player), or creates the WKP and awaits connection (first client/player)
-  after connection, both clients run setup(int plrNum)
+  after connection, both clients run startRound(int plrNum, int turn)
 
   returns n/a
   =========================*/
@@ -19,33 +19,47 @@ void connect(){
     if (mkfifo("wkp", 0650) == -1){ //create wkp
       printf("game.c: connect: mkfifo error: %d: %s\n", errno, strerror(errno)); //error if wkp isn't made 4 some reason
     }
-    printf("wkp created, player 1\nwaiting for player 2...\n");
+    printf("Welcome. You are the first player. Awaiting a second player to accompany you...\n");
     int fd = open("wkp", O_RDONLY); //wait for connect from player 2
     if (fd == -1){ //if during connetion error happens
       printf("connect: open error: %d: %s\n", errno, strerror(errno));
     }
-    printf("clients connected. you are player 1\n");
-    //run startRound(0) here
+    printf("Connected!\n");
+    startRound(0, 0);
   }else{ //player 2
     int fd = open("wkp", O_WRONLY); //connect to existing player 1
     if (fd == -1){ //if during connetion error happens
       printf("connect: open error: %d: %s\n", errno, strerror(errno));
     }
-    printf("clients connected. you are player 2\n");
-    //run startRound(1) here
+    printf("Welcome. You have joined another player.\n");
+    receiveRound(1, 0);
   }
   return;
 }
 
 /*=========================
-  setup
-  args: plrNum
+  startRound
+  args: plrNum, turn
 
   takes an argument plrNum which decides the players and sets up the game. runs playRound(int plrnum, struct roundInfo ri) after.
+  takes an argument turn which dictates if the other player is the first turn.
 
   returns n/a
   =========================*/
-void startRound(int plrNum){
+void startRound(int plrNum, int turn){
+  if (plrNum == turn){ //the player that loads the gun
+    //setup round stats
+    int shellLen = 0 //blank val for now
+    struct roundInfo ri; //setup roundInfo
+    ri.firstTurn = 0;
+    ri.lives = 0;
+    ri.blanks = 0;
+    ri.plr1hp = 0;
+    r1.plr2hp = 0;
+    r1.turn = turn;
+  }else{ //the player that receives round info via wkp
+
+  }
   return;
 }
 

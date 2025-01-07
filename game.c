@@ -1,5 +1,10 @@
 #include "game.h"
 
+//main
+int main(){
+  connect();
+  return 0;
+}
 /*=========================
   connect
   args: none
@@ -10,6 +15,25 @@
   returns n/a
   =========================*/
 void connect(){
+  if (open("wkp", O_EXCL) == -1){ //player 1
+    if (mkfifo("wkp", 0650) == -1){ //create wkp
+      printf("game.c: connect: mkfifo error: %d: %s\n", errno, strerror(errno)); //error if wkp isn't made 4 some reason
+    }
+    printf("wkp created, player 1\nwaiting for player 2...\n");
+    int fd = open("wkp", O_RDONLY); //wait for connect from player 2
+    if (fd == -1){ //if during connetion error happens
+      printf("connect: open error: %d: %s\n", errno, strerror(errno));
+    }
+    printf("clients connected. you are player 1\n");
+    //run startRound(0) here
+  }else{ //player 2
+    int fd = open("wkp", O_WRONLY); //connect to existing player 1
+    if (fd == -1){ //if during connetion error happens
+      printf("connect: open error: %d: %s\n", errno, strerror(errno));
+    }
+    printf("clients connected. you are player 2\n");
+    //run startRound(1) here
+  }
   return;
 }
 
@@ -54,5 +78,12 @@ void playRound(int plrNum, struct roundInfo ri){
   returns struct roundInfo
   =========================*/
 struct roundInfo translate(char * buff){
-  return NULL;
+  struct roundInfo s; //blank
+  s.firstTurn = 0;
+  s.lives = 0;
+  s.blanks = 0;
+  s.plr1hp = 0;
+  s.plr2hp = 0;
+  s.turn = 0;
+  return s;
 }

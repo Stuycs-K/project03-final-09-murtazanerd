@@ -1,6 +1,14 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <string.h>
+#include <errno.h>
 #ifndef PIPE_H
 #define PIPE_H
-int connect();
+void connect();
 struct roundInfo {
   int firstTurn;
   int lives;
@@ -9,6 +17,7 @@ struct roundInfo {
   int plr2hp;
   int turn;
 };
-void setup(int plrNum);
-void playRound(int turn);
+void startRound(int plrNum);
+void playRound(int plrNum, struct roundInfo ri);
+struct roundInfo translate(char * buff);
 #endif

@@ -11,3 +11,8 @@ The repository was setup and cloned. `(10 min)`
 `README.md` was completely written (Exception: The install guide) and added to the repository. `(9 min)`  
 `DEVLOG.md` has been setup properly and is now being written on, and will be added to the repository. `(3 min)`  
 Accurate time taken has been updated onto `DEVLOG.md`. A few formatting edits were published as well. `(2 min)`
+
+### 2025-01-07 - game.c, game.h, commit author fixes
+`8:00 - 8:50 (Home, Absent from School)`  
+Files `game.c` and `game.h` were created, and contain functions, headers, and comments. `(30 min)`  
+Issues with my device commiting under my name were resolved. `(10 min)`

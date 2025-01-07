@@ -16,3 +16,5 @@ Accurate time taken has been updated onto `DEVLOG.md`. A few formatting edits we
 `8:00 - 8:50 (Home, Absent from School)`  
 Files `game.c` and `game.h` were created, and contain functions, headers, and comments. `(30 min)`  
 Issues with my device commiting under my name were resolved. `(10 min)`
+`8:50 - 9:20 (Home, Absent from School)`
+wkp connection established between clients `(30 min)`

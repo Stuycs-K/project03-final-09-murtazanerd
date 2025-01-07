@@ -15,7 +15,7 @@ int main(){
   returns n/a
   =========================*/
 void connect(){
-  if (open("wkp", O_EXCL) == -1){ //player 1
+  if (open("wkp", O_WRONLY) == -1){ //player 1
     if (mkfifo("wkp", 0650) == -1){ //create wkp
       printf("game.c: connect: mkfifo error: %d: %s\n", errno, strerror(errno)); //error if wkp isn't made 4 some reason
     }

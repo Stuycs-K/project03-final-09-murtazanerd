@@ -35,6 +35,7 @@ void startRound(int plrNum){
   returns n/a
   =========================*/
 void playRound(int plrNum, struct roundInfo ri){
+  //check common round info here
   if (plrNum == 0){
     //player 1 client code here
   }

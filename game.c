@@ -49,10 +49,12 @@ void connect(){
   =========================*/
 void startRound(int plrNum, int turn){
   printf("startRound ran\n");
-  if (plrNum == turn){ //the player that loads the gun
-    printf("you are round starter\n");
+  if (plrNum == turn){ //the player that loads the gun. creates the shell order, and sends information regarding it to the wkp.
+    printf("You are the player that creates the shell order.\n");
     //setup round stats
-    int shellLen = 0; //blank val for now
+    srand(time(NULL));
+    int shellLen = rand() % (8 - 2 + 1) + 2; //randomly create the length of the shell between 2 and 8.
+    printf("The length of the shell order for this round is: %d\n", shellLen);
     struct roundInfo ri; //setup roundInfo
     ri.firstTurn = 0;
     ri.lives = 0;
@@ -60,8 +62,8 @@ void startRound(int plrNum, int turn){
     ri.plr1hp = 0;
     ri.plr2hp = 0;
     ri.turn = turn;
-  }else{ //the player that receives round info via wkp
-    printf("you are round reciever\n");
+  }else{ //the player that recieves the shell order.
+    printf("You are the player that recieves the shell order.\n");
     recieveRound();
   }
   return;

@@ -6,6 +6,7 @@
 #include <sys/stat.h>
 #include <string.h>
 #include <errno.h>
+#include <time.h>
 #ifndef PIPE_H
 #define PIPE_H
 void connect();

@@ -117,7 +117,7 @@ void startRound(int plrNum, int turn){
     ri.plr2hp = (*curr - '0');
     strsep(&curr, "-");
     ri.turn = (*curr - '0');
-    printf("roundInfo:\nfirstTurn: %d\nlives: %d\blanks: %d\nplr1hp: %d\nplr2hp: %d\nturn: %d\n", ri.firstTurn, ri.lives, ri.blanks, ri.plr1hp, ri.plr2hp, ri.turn); //debug
+    printf("roundInfo:\nfirstTurn: %d\nlives: %d\nblanks: %d\nplr1hp: %d\nplr2hp: %d\nturn: %d\n", ri.firstTurn, ri.lives, ri.blanks, ri.plr1hp, ri.plr2hp, ri.turn); //debug
   }
   return;
 }

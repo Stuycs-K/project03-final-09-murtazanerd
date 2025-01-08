@@ -27,6 +27,6 @@ Branch `naf` was created and is now being used for changes. `(2 min)`
 New function: `receiveRound`. Appropriate details added. `(25 min)`  
 `2:10 - 2:50 (Class time)`  
 `startRound`: creating round information added. connection between clients sending/receiving information added. dialouge text added. `(40 min)`
-`2:50 - 3:34 (Home time)`
+`2:50 - 3:34 (Home time)`  
 `startRound`: all dialouge cleaned up, sleep()s added, issues regarding sending information fixed, strsep connections added. `(41 min)`
 

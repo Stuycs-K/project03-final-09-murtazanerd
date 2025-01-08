@@ -9,7 +9,7 @@ int main(){
   connect
   args: none
 
-  either connects to an existing WKP if it was made (second client/player), or creates the WKP and awaits connection (first client/player)
+  either connects to an existing WKP if it was made (second client/player), or creates the WKP and asleeps connection (first client/player)
   after connection, both clients run startRound(int plrNum, int turn)
 
   returns n/a
@@ -19,8 +19,8 @@ void connect(){
     if (mkfifo("wkp", 0650) == -1){ //create wkp
       printf("game.c: connect: mkfifo error: %d: %s\n", errno, strerror(errno)); //error if wkp isn't made 4 some reason
     }
-    printf("Welcome. You are the first player. Awaiting a second player to accompany you...\n");
-    int fd = open("wkp", O_RDONLY); //wait for connect from player 2
+    printf("Welcome. You are the first player. Asleeping a second player to accompany you...\n");
+    int fd = open("wkp", O_RDONLY); //sleep for connect from player 2
     if (fd == -1){ //if during connetion error happens
       printf("connect: open error: %d: %s\n", errno, strerror(errno));
     }
@@ -50,7 +50,6 @@ void connect(){
   returns n/a
   =========================*/
 void startRound(int plrNum, int turn){
-  printf("startRound ran\n");
   if (plrNum == turn){ //the player that loads the gun. creates the shell order, and sends information regarding it to the wkp.
     printf("You are the player that creates the shell order.\n");
     //set up # of lives and # of blanks
@@ -80,9 +79,7 @@ void startRound(int plrNum, int turn){
     char rIC[20];
     int bytes;
     bytes = sprintf(rIC, "%d-%d-%d-%d-%d-%d", ri.firstTurn, ri.lives, ri.blanks, ri.plr1hp, ri.plr2hp, ri.turn);
-    printf("info to send: %s\n", rIC);
     //send info to other plr
-    printf("writing to other player\n");
     int fd = open("wkp", O_WRONLY);
     if (fd == -1){ //if during connetion error happens
       printf("startRound: open error: %d: %s\n", errno, strerror(errno));
@@ -90,18 +87,26 @@ void startRound(int plrNum, int turn){
     write(fd, rIC, bytes);
     close(fd);
     //display info to current plr
-    printf("The number of lives this round are: %d.\nThe number of blanks this round are: %d.\nBoth players have %d charges.\n", lives, blanks, hp);
+    printf("You load the shells into the shotgun...\n");
+    sleep(1);
+    printf("You load %d live bullets.\n", lives);
+    sleep(1);
+    printf("You load %d blank bullets.\n", blanks);
+    sleep(1);
+    printf("The machine to your side lights up and makes a beep sound.\n");
+    sleep(1);
+    printf("It reads...\n");
+    sleep(1);
+    printf("YOU: %d | OTHER: %d\n", hp, hp);
   }else{ //the player that recieves the shell order.
     printf("You are the player that recieves the shell order.\n");
     //set up char to read
     char rIC[20];
-    printf("reading for round info\n");
     int fd = open("wkp", O_RDONLY); //read from other plr
     if (fd == -1){ //if during connetion error happens
       printf("startRound: open error: %d: %s\n", errno, strerror(errno));
     }
     read(fd, rIC, 20);
-    printf("info obtained: %s\n", rIC);
     close(fd); //close pipe
     //setup struct for playRound
     struct roundInfo ri;
@@ -117,8 +122,18 @@ void startRound(int plrNum, int turn){
     ri.plr2hp = (*curr - '0');
     strsep(&curr, "-");
     ri.turn = (*curr - '0');
-    //display information
-    printf("The number of lives this round are: %d.\nThe number of blanks this round are: %d.\nBoth players have %d charges.\n", ri.lives, ri.blanks, ri.plr1hp);
+    //display info to current plr
+    printf("You watch OTHER load the shells into the shotgun...\n");
+    sleep(1);
+    printf("They load %d live bullets.\n", ri.lives);
+    sleep(1);
+    printf("They load %d blank bullets.\n", ri.blanks);
+    sleep(1);
+    printf("The machine to your side lights up and makes a beep sound.\n");
+    sleep(1);
+    printf("It reads...\n");
+    sleep(1);
+    printf("YOU: %d | OTHER: %d\n", ri.plr1hp, ri.plr1hp);
   }
   return;
 }
@@ -140,7 +155,7 @@ void recieveRound(){
   playRound
   args: turn
 
-  recursive function that takes an argument turn which dictates whose turn it is. shows statistics and player options. one end of the WKP should be waiting (the player whose turn it's not) whilst the other end should
+  recursive function that takes an argument turn which dictates whose turn it is. shows statistics and player options. one end of the WKP should be sleeping (the player whose turn it's not) whilst the other end should
   write after the player does something. plrNum helps seperate multiple instances of the game, and keeps turns in check. base case is when one player has 0 hp. pipes are closed at end of turn.
 
   returns n/a

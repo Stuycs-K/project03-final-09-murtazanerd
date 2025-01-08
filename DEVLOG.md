@@ -18,3 +18,11 @@ Files `game.c` and `game.h` were created, and contain functions, headers, and co
 Issues with my device commiting under my name were resolved. `(10 min)`
 `8:50 - 9:20 (Home, Absent from School)`
 wkp connection established between clients `(30 min)`
+
+### 2025-01-08 - branching setup, function flow set
+`12:00 - 12:50 (Pd 5 - 6, yesterday's 'homework' time, except doing it today)`
+The connection flow between the functions `startRound`, `receiveRound`, and `connect`.
+Print checks were added to test flow.
+Branch `naf` was created and is now being used for changes.
+New function: `receiveRound`. Appropriate details added.
+

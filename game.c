@@ -32,7 +32,7 @@ void connect(){
       printf("connect: open error: %d: %s\n", errno, strerror(errno));
     }
     printf("Welcome. You have joined another player.\n");
-    receiveRound(1, 0);
+    startRound(1, 0);
   }
   return;
 }
@@ -43,23 +43,40 @@ void connect(){
 
   takes an argument plrNum which decides the players and sets up the game. runs playRound(int plrnum, struct roundInfo ri) after.
   takes an argument turn which dictates if the other player is the first turn.
+  creates round information, and sends it via the wkp.
 
   returns n/a
   =========================*/
 void startRound(int plrNum, int turn){
+  printf("startRound ran\n");
   if (plrNum == turn){ //the player that loads the gun
+    printf("you are round starter\n");
     //setup round stats
-    int shellLen = 0 //blank val for now
+    int shellLen = 0; //blank val for now
     struct roundInfo ri; //setup roundInfo
     ri.firstTurn = 0;
     ri.lives = 0;
     ri.blanks = 0;
     ri.plr1hp = 0;
-    r1.plr2hp = 0;
-    r1.turn = turn;
+    ri.plr2hp = 0;
+    ri.turn = turn;
   }else{ //the player that receives round info via wkp
-
+    printf("you are round reciever\n");
+    recieveRound();
   }
+  return;
+}
+
+/*=========================
+  recieveRound
+  args: n/a
+
+  displays round information via wkp from sending client
+
+  returns n/a
+  =========================*/
+void recieveRound(){
+  printf("recieve round ran\n");
   return;
 }
 

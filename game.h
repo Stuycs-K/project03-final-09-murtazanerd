@@ -17,7 +17,8 @@ struct roundInfo {
   int plr2hp;
   int turn;
 };
-void startRound(int plrNum);
+void startRound(int plrNum, int turn);
 void playRound(int plrNum, struct roundInfo ri);
 struct roundInfo translate(char * buff);
+void recieveRound();
 #endif

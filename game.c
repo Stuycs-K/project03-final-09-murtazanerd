@@ -25,6 +25,7 @@ void connect(){
       printf("connect: open error: %d: %s\n", errno, strerror(errno));
     }
     printf("Connected!\n");
+    close(fd); //close pipe
     startRound(0, 0);
   }else{ //player 2
     int fd = open("wkp", O_WRONLY); //connect to existing player 1
@@ -32,6 +33,7 @@ void connect(){
       printf("connect: open error: %d: %s\n", errno, strerror(errno));
     }
     printf("Welcome. You have joined another player.\n");
+    close(fd); //close pipe
     startRound(1, 0);
   }
   return;
@@ -51,20 +53,56 @@ void startRound(int plrNum, int turn){
   printf("startRound ran\n");
   if (plrNum == turn){ //the player that loads the gun. creates the shell order, and sends information regarding it to the wkp.
     printf("You are the player that creates the shell order.\n");
-    //setup round stats
+    //set up # of lives and # of blanks
     srand(time(NULL));
-    int shellLen = rand() % (8 - 2 + 1) + 2; //randomly create the length of the shell between 2 and 8.
-    printf("The length of the shell order for this round is: %d\n", shellLen);
+    int lives = 0;
+    int blanks = 0;
+    for (int i = 0; i < rand() % (8 - 2 + 1) + 2; i++){ //create shell order.
+        int lbSetter = rand() % (1 - 0 + 1) + 0;
+        if (lbSetter == 0){
+            lives += 1;
+        }else if (lbSetter == 1){
+            blanks += 1;
+        }else{
+            printf("Issue with creating shell! lbSetter got value that is not 0 nor 1.\n"); //error
+        }
+    }
+    //hp for current round
+    int hp = rand() % (6 - 2 + 1) + 2;
     struct roundInfo ri; //setup roundInfo
     ri.firstTurn = 0;
-    ri.lives = 0;
-    ri.blanks = 0;
-    ri.plr1hp = 0;
-    ri.plr2hp = 0;
+    ri.lives = lives;
+    ri.blanks = blanks;
+    ri.plr1hp = hp;
+    ri.plr2hp = hp;
     ri.turn = turn;
+    //create info to send to other plr
+    char rIC[20];
+    int bytes;
+    bytes = sprintf(rIC, "%d %d %d %d %d %d", ri.firstTurn, ri.lives, ri.blanks, ri.plr1hp, ri.plr2hp, ri.turn);
+    printf("info to send: %s\n", rIC);
+    //send info to other plr
+    printf("writing to other player\n");
+    int fd = open("wkp", O_WRONLY);
+    if (fd == -1){ //if during connetion error happens
+      printf("startRound: open error: %d: %s\n", errno, strerror(errno));
+    }
+    write(fd, rIC, bytes);
+    close(fd);
+    //display info to current plr
+    printf("The number of lives this round are: %d.\nThe number of blanks this round are: %d.\nBoth players have %d charges.\n", lives, blanks, hp);
   }else{ //the player that recieves the shell order.
     printf("You are the player that recieves the shell order.\n");
-    recieveRound();
+    //set up char to read
+    char rIC[20];
+    printf("reading for round info\n");
+    int fd = open("wkp", O_RDONLY); //read from other plr
+    if (fd == -1){ //if during connetion error happens
+      printf("startRound: open error: %d: %s\n", errno, strerror(errno));
+    }
+    read(fd, rIC, 20);
+    printf("info obtained: %s\n", rIC);
+    close(fd); //close pipe
   }
   return;
 }

@@ -79,7 +79,7 @@ void startRound(int plrNum, int turn){
     //create info to send to other plr
     char rIC[20];
     int bytes;
-    bytes = sprintf(rIC, "%d %d %d %d %d %d", ri.firstTurn, ri.lives, ri.blanks, ri.plr1hp, ri.plr2hp, ri.turn);
+    bytes = sprintf(rIC, "%d-%d-%d-%d-%d-%d", ri.firstTurn, ri.lives, ri.blanks, ri.plr1hp, ri.plr2hp, ri.turn);
     printf("info to send: %s\n", rIC);
     //send info to other plr
     printf("writing to other player\n");
@@ -103,6 +103,17 @@ void startRound(int plrNum, int turn){
     read(fd, rIC, 20);
     printf("info obtained: %s\n", rIC);
     close(fd); //close pipe
+    //setup struct for playRound
+    struct roundInfo ri;
+    char *curr = rIC;
+    strsep(&curr, "-"); //strsep to first val
+    ri.firstTurn = (*curr - '0'); //set val to corresponding struct var
+    printf("debug: firstTurn value: %d\n", ri.firstTurn); //debug
+    ri.lives = 0;
+    ri.blanks = 0;
+    ri.plr1hp = 0;
+    ri.plr2hp = 0;
+    ri.turn = 0;
   }
   return;
 }

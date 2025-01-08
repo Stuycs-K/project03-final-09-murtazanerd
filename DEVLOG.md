@@ -19,10 +19,12 @@ Issues with my device commiting under my name were resolved. `(10 min)`
 `8:50 - 9:20 (Home, Absent from School)`
 wkp connection established between clients `(30 min)`
 
-### 2025-01-08 - branching setup, function flow set
+### 2025-01-08 - branching setup, function flow set, progress on startRound
 `12:00 - 12:50 (Pd 5 - 6, yesterday's 'homework' time, except doing it today)`  
 The connection flow between the functions `startRound`, `receiveRound`, and `connect`. `(20 min)`  
 Print checks were added to test flow. `(3 min)`  
 Branch `naf` was created and is now being used for changes. `(2 min)`  
-New function: `receiveRound`. Appropriate details added. `(25 min)`
+New function: `receiveRound`. Appropriate details added. `(25 min)`  
+`2:10 - 2:50 (Class time)`  
+`startRound`: creating round information added. connection between clients sending/receiving information added. dialouge text added. `(40 min)`
 

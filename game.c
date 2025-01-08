@@ -105,10 +105,10 @@ void startRound(int plrNum, int turn){
     close(fd); //close pipe
     //setup struct for playRound
     struct roundInfo ri;
-    char *curr = rIC;
-    strsep(&curr, "-"); //strsep to first val
+    char *curr = rIC; //set to first val
     ri.firstTurn = (*curr - '0'); //set val to corresponding struct var
     printf("debug: firstTurn value: %d\n", ri.firstTurn); //debug
+    strsep(&curr, "-"); //strsep to second val
     ri.lives = 0;
     ri.blanks = 0;
     ri.plr1hp = 0;

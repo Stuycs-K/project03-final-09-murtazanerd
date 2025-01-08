@@ -107,13 +107,17 @@ void startRound(int plrNum, int turn){
     struct roundInfo ri;
     char *curr = rIC; //set to first val
     ri.firstTurn = (*curr - '0'); //set val to corresponding struct var
-    printf("debug: firstTurn value: %d\n", ri.firstTurn); //debug
     strsep(&curr, "-"); //strsep to second val
-    ri.lives = 0;
-    ri.blanks = 0;
-    ri.plr1hp = 0;
-    ri.plr2hp = 0;
-    ri.turn = 0;
+    ri.lives = (*curr - '0');
+    strsep(&curr, "-");
+    ri.blanks = (*curr - '0');
+    strsep(&curr, "-");
+    ri.plr1hp = (*curr - '0');
+    strsep(&curr, "-");
+    ri.plr2hp = (*curr - '0');
+    strsep(&curr, "-");
+    ri.turn = (*curr - '0');
+    printf("roundInfo:\nfirstTurn: %d\nlives: %d\blanks: %d\nplr1hp: %d\nplr2hp: %d\nturn: %d\n", ri.firstTurn, ri.lives, ri.blanks, ri.plr1hp, ri.plr2hp, ri.turn); //debug
   }
   return;
 }

@@ -123,6 +123,7 @@ void startRound(int plrNum, struct roundInfo ri){
       sleep(1);
       printf("YOU: %d | OTHER: %d\n", hp, hp);
     }
+    playRound(plrNum, ri);
   }else{ //the player that recieves the shell order.
     //set up char to read
     char rIC[20];
@@ -167,6 +168,7 @@ void startRound(int plrNum, struct roundInfo ri){
       sleep(1);
       printf("YOU: %d | OTHER: %d\n", ri.plr1hp, ri.plr1hp);
     }
+    playRound(plrNum, ri);
   }
   return;
 }

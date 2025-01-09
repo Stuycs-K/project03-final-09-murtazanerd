@@ -11,6 +11,7 @@ int main(){
 
   either connects to an existing WKP if it was made (second client/player), or creates the WKP and asleeps connection (first client/player)
   after connection, both clients run startRound(int plrNum, int turn)
+  creates a struct as well, ri, which stores roundInfo.
 
   returns n/a
   =========================*/
@@ -19,14 +20,22 @@ void connect(){
     if (mkfifo("wkp", 0650) == -1){ //create wkp
       printf("game.c: connect: mkfifo error: %d: %s\n", errno, strerror(errno)); //error if wkp isn't made 4 some reason
     }
-    printf("Welcome. You are the first player. Asleeping a second player to accompany you...\n");
+    printf("Welcome. You are the first player. Awaiting a second player to accompany you...\n");
     int fd = open("wkp", O_RDONLY); //sleep for connect from player 2
     if (fd == -1){ //if during connetion error happens
       printf("connect: open error: %d: %s\n", errno, strerror(errno));
     }
     printf("Connected!\n");
     close(fd); //close pipe
-    startRound(0, 0);
+    //setup struct for the game
+    struct roundInfo ri;
+    ri.firstTurn = 0;
+    ri.lives = 0;
+    ri.blanks = 0;
+    ri.plr1hp = 0;
+    ri.plr2hp = 0;
+    ri.turn = 0;
+    startRound(0, ri);
   }else{ //player 2
     int fd = open("wkp", O_WRONLY); //connect to existing player 1
     if (fd == -1){ //if during connetion error happens
@@ -34,24 +43,30 @@ void connect(){
     }
     printf("Welcome. You have joined another player.\n");
     close(fd); //close pipe
-    startRound(1, 0);
+    //setup struct for the game
+    struct roundInfo ri;
+    ri.firstTurn = 0;
+    ri.lives = 0;
+    ri.blanks = 0;
+    ri.plr1hp = 0;
+    ri.plr2hp = 0;
+    ri.turn = 0;
+    startRound(1, ri);
   }
   return;
 }
 
 /*=========================
   startRound
-  args: plrNum, turn
+  args: plrNum, ri
 
   takes an argument plrNum which decides the players and sets up the game. runs playRound(int plrnum, struct roundInfo ri) after.
-  takes an argument turn which dictates if the other player is the first turn.
-  creates round information, and sends it via the wkp.
+  takes an argument ri which is the struct created in connect() which is filled accordingly. if this is the first turn of the round, hp is set. if not, only shells are set.
 
   returns n/a
   =========================*/
-void startRound(int plrNum, int turn){
-  if (plrNum == turn){ //the player that loads the gun. creates the shell order, and sends information regarding it to the wkp.
-    printf("You are the player that creates the shell order.\n");
+void startRound(int plrNum, struct roundInfo ri){
+  if (plrNum == ri.turn){ //the player that loads the gun. creates the shell order, and sends information regarding it to the wkp.
     //set up # of lives and # of blanks
     srand(time(NULL));
     int lives = 0;
@@ -68,13 +83,13 @@ void startRound(int plrNum, int turn){
     }
     //hp for current round
     int hp = rand() % (6 - 2 + 1) + 2;
-    struct roundInfo ri; //setup roundInfo
-    ri.firstTurn = 0;
+    //setup roundInfo
     ri.lives = lives;
     ri.blanks = blanks;
-    ri.plr1hp = hp;
-    ri.plr2hp = hp;
-    ri.turn = turn;
+    if (ri.firstTurn == 0){ //only do hp changes should this be a new round. may want to add item changes here too [all the items removing themselves]
+      ri.plr1hp = hp;
+      ri.plr2hp = hp;
+    }
     //create info to send to other plr
     char rIC[20];
     int bytes;
@@ -89,17 +104,26 @@ void startRound(int plrNum, int turn){
     //display info to current plr
     printf("You load the shells into the shotgun...\n");
     sleep(1);
-    printf("You load %d live bullets.\n", lives);
+    if (ri.lives == 1){
+      printf("You load %d live bullet.\n", ri.lives);
+    }else if (ri.lives != 0){
+      printf("You load %d live bullets.\n", ri.lives);
+    }
     sleep(1);
-    printf("You load %d blank bullets.\n", blanks);
-    sleep(1);
-    printf("The machine to your side lights up and makes a beep sound.\n");
-    sleep(1);
-    printf("It reads...\n");
-    sleep(1);
-    printf("YOU: %d | OTHER: %d\n", hp, hp);
+    if (ri.blanks == 1){
+      printf("You load %d blank bullet.\n", ri.blanks);
+    }else if (ri.blanks != 0){
+      printf("You load %d blank bullets.\n", ri.blanks);
+    }
+    if (ri.firstTurn == 0){
+      sleep(1);
+      printf("The machine to your side lights up and makes a beep sound.\n");
+      sleep(1);
+      printf("It reads...\n");
+      sleep(1);
+      printf("YOU: %d | OTHER: %d\n", hp, hp);
+    }
   }else{ //the player that recieves the shell order.
-    printf("You are the player that recieves the shell order.\n");
     //set up char to read
     char rIC[20];
     int fd = open("wkp", O_RDONLY); //read from other plr
@@ -109,7 +133,6 @@ void startRound(int plrNum, int turn){
     read(fd, rIC, 20);
     close(fd); //close pipe
     //setup struct for playRound
-    struct roundInfo ri;
     char *curr = rIC; //set to first val
     ri.firstTurn = (*curr - '0'); //set val to corresponding struct var
     strsep(&curr, "-"); //strsep to second val
@@ -125,15 +148,25 @@ void startRound(int plrNum, int turn){
     //display info to current plr
     printf("You watch OTHER load the shells into the shotgun...\n");
     sleep(1);
-    printf("They load %d live bullets.\n", ri.lives);
+    if (ri.lives == 1){
+      printf("They load %d live bullet.\n", ri.lives);
+    }else if (ri.lives != 0){
+      printf("They load %d live bullets.\n", ri.lives);
+    }
     sleep(1);
-    printf("They load %d blank bullets.\n", ri.blanks);
-    sleep(1);
-    printf("The machine to your side lights up and makes a beep sound.\n");
-    sleep(1);
-    printf("It reads...\n");
-    sleep(1);
-    printf("YOU: %d | OTHER: %d\n", ri.plr1hp, ri.plr1hp);
+    if (ri.blanks == 1){
+      printf("They load %d blank bullet.\n", ri.blanks);
+    }else if (ri.blanks != 0){
+      printf("They load %d blank bullets.\n", ri.blanks);
+    }
+    if (ri.firstTurn == 0){
+      sleep(1);
+      printf("The machine to your side lights up and makes a beep sound.\n");
+      sleep(1);
+      printf("It reads...\n");
+      sleep(1);
+      printf("YOU: %d | OTHER: %d\n", ri.plr1hp, ri.plr1hp);
+    }
   }
   return;
 }

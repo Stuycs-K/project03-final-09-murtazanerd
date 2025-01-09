@@ -30,3 +30,6 @@ New function: `receiveRound`. Appropriate details added. `(25 min)`
 `2:50 - 3:34 (Home time)`  
 `startRound`: all dialouge cleaned up, sleep()s added, issues regarding sending information fixed, strsep connections added. `(41 min)`
 
+### 2025-01-09 - rewriting startRound
+`2:10 - 2:50 (Class time)`  
+`startRound`: rewrote the entire function to now not only fill structs for the very start of a round, but to also reload the gun when it runs out of bullets. this flows with the struct nicely. `(41 min)`

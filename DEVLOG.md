@@ -32,4 +32,7 @@ New function: `receiveRound`. Appropriate details added. `(25 min)`
 
 ### 2025-01-09 - rewriting startRound
 `2:10 - 2:50 (Class time)`  
-`startRound`: rewrote the entire function to now not only fill structs for the very start of a round, but to also reload the gun when it runs out of bullets. this flows with the struct nicely. `(41 min)`
+`startRound`: rewrote the entire function to now not only fill structs for the very start of a round, but to also reload the gun when it runs out of bullets. this flows with the struct nicely. `(41 min)`  
+`2:50 - 3:35 (Home time that I'm doing now because I have 10th free)`  
+`startRound`: minute changes to dialouge. `(15 min)`  
+`playRound`: begun work on it, seperating active/inactive players with correct pipe networking. currently not finished with this. `(30 min)`  

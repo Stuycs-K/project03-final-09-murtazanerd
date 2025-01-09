@@ -194,12 +194,90 @@ void recieveRound(){
   returns n/a
   =========================*/
 void playRound(int plrNum, struct roundInfo ri){
-  //check common round info here
-  if (plrNum == 0){
-    //player 1 client code here
-  }
-  if (plrNum == 1){
-    //player 2 client code here
+  //check if the current round is over (no shells left)
+  if (ri.lives == 0 && ri.blanks == 0){
+    startRound(plrNum, ri); //reload the shells
+  }else{
+    if (ri.turn == plrNum){ //the player whose turn it is
+      //give player options
+      printf("The circular machinery rotates the buck of the gun facing you, signalling that it is your turn.\n");
+      sleep(1);
+      while(ri.turn == plrNum){
+        printf("What will you do?\n");
+        sleep(1);
+        printf("[ YOU: %d | OTHER: %d ]\n[ SHOOT ]\n", ri.plr1hp, ri.plr2hp); //display stats
+        char input[20]; //increase for other things in future
+        fgets(input, 20, stdin); //wait for player input
+        if (strcmp(input, "SHOOT\n") == 0){ //if player selected SHOOT
+          int ACTION = 0;
+          //create info to send to other plr
+          char rIC[22];
+          int bytes;
+          bytes = sprintf(rIC, "%d-%d-%d-%d-%d-%d-%d", ri.firstTurn, ri.lives, ri.blanks, ri.plr1hp, ri.plr2hp, ri.turn, ACTION);
+          //send info to other plr
+          int fd = open("wkp", O_WRONLY);
+          if (fd == -1){ //if during connetion error happens
+            printf("playRound: open error: %d: %s\n", errno, strerror(errno));
+          }
+          write(fd, rIC, bytes);
+          close(fd); //close pipe
+          //display info to plr
+          printf("You pick up the shotgun.\n");
+          sleep(1);
+          printf("There is no going back now.\n");
+          sleep(1);
+          printf("Who will you shoot?\n[OTHER] [SELF]\n(Shooting yourself with a blank skips OTHER's turn.)\n");
+
+        }
+      }
+    }else{ //other player, waiting
+      printf("The circular machinery rotates the buck of the gun facing OTHER, signalling that it is their turn.\n");
+      sleep(1);
+      while (ri.turn != plrNum){
+        printf("OTHER is deciding...\n");
+        //prepare char to read
+        char rIC[22];
+        int fd = open("wkp", O_RDONLY); //read from other plr
+        if (fd == -1){ //if during connetion error happens
+          printf("playRound: open error: %d: %s\n", errno, strerror(errno));
+        }
+        read(fd, rIC, 22);
+        close(fd); //close pipe
+        //update struct with new info
+        char *curr = rIC; //set to first val
+        ri.firstTurn = (*curr - '0'); //set val to corresponding struct var
+        strsep(&curr, "-"); //strsep to second val
+        ri.lives = (*curr - '0');
+        strsep(&curr, "-");
+        ri.blanks = (*curr - '0');
+        strsep(&curr, "-");
+        ri.plr1hp = (*curr - '0');
+        strsep(&curr, "-");
+        ri.plr2hp = (*curr - '0');
+        strsep(&curr, "-");
+        ri.turn = (*curr - '0');
+        strsep(&curr, "-");
+        int ACTION = (*curr - '0');
+        //ACTIONS
+        //0 - Other player picked up the gun.
+        //1 - Other player aimed it at you.
+        //2 - Other player aimed it at themself.
+        //3 - Other player shot a BLANK.
+        //4 - Other player shot a LIVE.
+        //more soon for other commands.
+        //display info to current plr
+        if (ACTION == 0){
+          printf("OTHER picks up the shotgun.\n");
+          sleep(1);
+        }
+      }
+    }
+    if (plrNum == 0){
+      //player 1 client code here
+    }
+    if (plrNum == 1){
+      //player 2 client code here
+    }
   }
   return;
 }

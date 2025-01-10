@@ -174,16 +174,29 @@ void startRound(int plrNum, struct roundInfo ri){
 }
 
 /*=========================
-  recieveRound
-  args: n/a
+  chooseBullet
+  args: lives, blanks
 
-  displays round information via wkp from sending client
+  returns an int that determines whether a blank or live was chosen among lives and blanks (0 = LIVE, 1 = BLANK)
 
-  returns n/a
+  returns int
   =========================*/
-void recieveRound(){
-  printf("recieve round ran\n");
-  return;
+int chooseBullet(int lives, int blanks){
+  printf("Debug: A bullet is being chosen...\n");
+  //if one is zero, just don't bother doing random
+  if (lives == 0){
+    return 1;
+  }else if (blanks == 0){
+    return 0;
+  }
+  int total = lives + blanks; //set total
+  srand(time(NULL));
+  int randNum = rand() % (total - 1 + 1) + 1; //set random number between 1 and total, inclusive
+  if (randNum > lives){ //BLANK
+    return 1;
+  }else{
+    return 0; //LIVE
+  }
 }
 
 /*=========================
@@ -202,10 +215,11 @@ void playRound(int plrNum, struct roundInfo ri){
   }else{
     if (ri.turn == plrNum){ //the player whose turn it is
       //give player options
+      sleep(1);
       printf("The circular machinery rotates the buck of the gun facing you, signalling that it is your turn.\n");
       sleep(1);
       while(ri.turn == plrNum){
-        printf("What will you do?\n");
+        printf("The table is yours.\n");
         sleep(1);
         printf("[ YOU: %d | OTHER: %d ]\n[ SHOOT ]\n", ri.plr1hp, ri.plr2hp); //display stats
         char input[20]; //increase for other things in future
@@ -224,12 +238,91 @@ void playRound(int plrNum, struct roundInfo ri){
           write(fd, rIC, bytes);
           close(fd); //close pipe
           //display info to plr
+          int invalid = 0; //in case invalid command is typed
           printf("You pick up the shotgun.\n");
           sleep(1);
           printf("There is no going back now.\n");
           sleep(1);
-          printf("Who will you shoot?\n[OTHER] [SELF]\n(Shooting yourself with a blank skips OTHER's turn.)\n");
-
+          while (invalid == 0){
+            printf("Who will you shoot?\n[OTHER] [SELF]\n(Shooting yourself with a blank skips OTHER's turn.)\n");
+            char pickInput[20];
+            fgets(pickInput, 20, stdin); //wait for player input
+            if (strcmp(pickInput, "OTHER\n") == 0){ //player shot at OTHER
+              //send info that gun is being aimed at other.
+              ACTION = 1;
+              bytes = sprintf(rIC, "%d-%d-%d-%d-%d-%d-%d", ri.firstTurn, ri.lives, ri.blanks, ri.plr1hp, ri.plr2hp, ri.turn, ACTION);
+              fd = open("wkp", O_WRONLY);
+              if (fd == -1){ //err during connection
+                printf("playRound: open error: %d: %s\n", errno, strerror(errno));
+              }
+              write(fd, rIC, bytes);
+              close(fd); //close pipe
+              //dialouge
+              printf("You aim the shotgun at OTHER...\n");
+              sleep(1);
+              printf("Your hands tremble as you pull the trigger...\n");
+              sleep(1);
+              printf("...\n");
+              sleep(1);
+              invalid = 1; //valid command
+              //create info to send to other player
+              ri.firstTurn = 1; //no longer first turn, if it was
+              //pick bullet to be shot
+              int bullet = chooseBullet(ri.lives, ri.blanks);
+              //change vars accordingly
+              if (bullet == 0){ //LIVE
+                if (plrNum == 0){ //plr2 is shot
+                  ri.plr2hp -= 1;
+                }else{ //plr1 is shot
+                  ri.plr1hp -= 1;
+                }
+                ri.lives -= 1;
+                ACTION = 4;
+              }else{ //BLANK
+                ri.blanks -= 1; //no one takes damage. but a blank is lost.
+                ACTION = 3;
+              }
+              if (ri.turn == 0){ //set turn (must happen either way, as you are shooting OTHER)
+                ri.turn = 1;
+              }else{
+                ri.turn = 0;
+              }
+              //send data
+              bytes = sprintf(rIC, "%d-%d-%d-%d-%d-%d-%d", ri.firstTurn, ri.lives, ri.blanks, ri.plr1hp, ri.plr2hp, ri.turn, ACTION);
+              fd = open("wkp", O_WRONLY);
+              if (fd == -1){ //err during connection
+                printf("playRound: open error: %d: %s\n", errno, strerror(errno));
+              }
+              write(fd, rIC, bytes);
+              close(fd); //close pipe
+              //show dialouge
+              if (ACTION == 4){
+                printf("BAM!\n");
+                sleep(1);
+                printf("OTHER falls to the floor.\n");
+                sleep(1);
+                printf("You rack the shotgun.\n");
+                sleep(1);
+                printf("A used live bullet pops out.\n");
+                sleep(1);
+                printf("The monitor beeps.\n");
+                sleep(1);
+                printf("OTHER has lost a charge.\n");
+              }else if (ACTION == 3){
+                printf("Click...\n");
+                sleep(1);
+                printf("Silence fills the room.\n");
+                sleep(1);
+                printf("You rack the shotgun.\n");
+                sleep(1);
+                printf("A blank bullet pops out.\n");
+              }
+            }else if (strcmp(pickInput, "SELF\n") == 0){ //player shoots self
+              invalid = 1; //valid command
+            }else{ //invalid command
+              printf("Invalid command. Current available arguments:\n[SELF] - Point and shoot the shotgun at yourself.\n[OTHER] - Point and shoot the shotgun at OTHER.\n");
+            }
+          }
         }
       }
     }else{ //other player, waiting

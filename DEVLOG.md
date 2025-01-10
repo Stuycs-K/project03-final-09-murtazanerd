@@ -30,9 +30,15 @@ New function: `receiveRound`. Appropriate details added. `(25 min)`
 `2:50 - 3:34 (Home time)`  
 `startRound`: all dialouge cleaned up, sleep()s added, issues regarding sending information fixed, strsep connections added. `(41 min)`
 
-### 2025-01-09 - rewriting startRound
+### 2025-01-09 - rewriting startRound, beginning playRound
 `2:10 - 2:50 (Class time)`  
 `startRound`: rewrote the entire function to now not only fill structs for the very start of a round, but to also reload the gun when it runs out of bullets. this flows with the struct nicely. `(41 min)`  
 `2:50 - 3:35 (Home time that I'm doing now because I have 10th free)`  
 `startRound`: minute changes to dialouge. `(15 min)`  
 `playRound`: begun work on it, seperating active/inactive players with correct pipe networking. currently not finished with this. `(30 min)`  
+
+### 2025-01-10 - chooseBullet, progress on playRound
+`10:20 - 11:01 (Homework time except I do it before class today because I have a free then)`  
+Created a new function `chooseBullet` and completed it. `(20 min)`  
+`playRound`: made more progress on it, adding live and blank functionality. `(21 min)`  
+Removed `receiveRound`. `(less than a minute)`  

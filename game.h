@@ -19,7 +19,7 @@ struct roundInfo {
   int turn;
 };
 void startRound(int plrNum, struct roundInfo ri);
-void playRound(int plrNum, struct roundInfo ri);
+void playRound(int plrNum, struct roundInfo ri, int sameTurn);
 struct roundInfo translate(char * buff);
 int chooseBullet(int lives, int blanks);
 #endif

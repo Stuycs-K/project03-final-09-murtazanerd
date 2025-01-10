@@ -123,7 +123,7 @@ void startRound(int plrNum, struct roundInfo ri){
       sleep(1);
       printf("YOU: %d | OTHER: %d\n", hp, hp);
     }
-    playRound(plrNum, ri);
+    playRound(plrNum, ri, 0);
   }else{ //the player that recieves the shell order.
     //set up char to read
     char rIC[20];
@@ -168,7 +168,7 @@ void startRound(int plrNum, struct roundInfo ri){
       sleep(1);
       printf("YOU: %d | OTHER: %d\n", ri.plr1hp, ri.plr1hp);
     }
-    playRound(plrNum, ri);
+    playRound(plrNum, ri, 0);
   }
   return;
 }
@@ -182,7 +182,6 @@ void startRound(int plrNum, struct roundInfo ri){
   returns int
   =========================*/
 int chooseBullet(int lives, int blanks){
-  printf("Debug: A bullet is being chosen...\n");
   //if one is zero, just don't bother doing random
   if (lives == 0){
     return 1;
@@ -201,14 +200,14 @@ int chooseBullet(int lives, int blanks){
 
 /*=========================
   playRound
-  args: turn
+  args: plrNum, ri, sameTurn
 
-  recursive function that takes an argument turn which dictates whose turn it is. shows statistics and player options. one end of the WKP should be sleeping (the player whose turn it's not) whilst the other end should
-  write after the player does something. plrNum helps seperate multiple instances of the game, and keeps turns in check. base case is when one player has 0 hp. pipes are closed at end of turn.
+  recursive function that plays the turns out. displays most dialouge, allows player actions, and sends messages through WKP to both clients about what is happening.
+  plrNum is used to help seperate the clients. ri is used to keep roundInfo with each turn. sameTurn is used for specific dialouge.
 
   returns n/a
   =========================*/
-void playRound(int plrNum, struct roundInfo ri){
+void playRound(int plrNum, struct roundInfo ri, int sameTurn){
   //check if the current round is over (no shells left)
   if (ri.lives == 0 && ri.blanks == 0){
     startRound(plrNum, ri); //reload the shells
@@ -216,7 +215,11 @@ void playRound(int plrNum, struct roundInfo ri){
     if (ri.turn == plrNum){ //the player whose turn it is
       //give player options
       sleep(1);
-      printf("The circular machinery rotates the buck of the gun facing you, signalling that it is your turn.\n");
+      if (sameTurn == 1){ //this is the same turn, plr hasnt changed
+        printf("The circular machinery does not move. It is still your turn.\n");
+      }else{
+        printf("The circular machinery rotates the buck of the gun facing you, signalling that it is your turn.\n");
+      }
       sleep(1);
       while(ri.turn == plrNum){
         printf("The table is yours.\n");
@@ -242,8 +245,8 @@ void playRound(int plrNum, struct roundInfo ri){
           printf("You pick up the shotgun.\n");
           sleep(1);
           printf("There is no going back now.\n");
-          sleep(1);
           while (invalid == 0){
+            sleep(1);
             printf("Who will you shoot?\n[OTHER] [SELF]\n(Shooting yourself with a blank skips OTHER's turn.)\n");
             char pickInput[20];
             fgets(pickInput, 20, stdin); //wait for player input
@@ -323,7 +326,7 @@ void playRound(int plrNum, struct roundInfo ri){
                 sleep(1);
                 printf("A blank shell pops out.\n");
               }
-              playRound(plrNum, ri); //restart the turn order
+              playRound(plrNum, ri, 0); //restart the turn order
             }else if (strcmp(pickInput, "SELF\n") == 0){ //player shoots self
               invalid = 1; //valid command
               //send info that gun is being aimed at self.
@@ -392,6 +395,7 @@ void playRound(int plrNum, struct roundInfo ri){
                 printf("The monitor beeps.\n");
                 sleep(1);
                 printf("You have lost a charge.\n");
+                playRound(plrNum, ri, 0);
               }else if (ACTION == 3){
                 printf("Click...\n");
                 sleep(1);
@@ -402,8 +406,8 @@ void playRound(int plrNum, struct roundInfo ri){
                 printf("A blank bullet pops out.\n");
                 sleep(1);
                 printf("You have been given another turn.\n");
+                playRound(plrNum, ri, 1);
               }
-              playRound(plrNum, ri);
             }else{ //invalid command
               printf("Invalid command. Current available arguments:\n[SELF] - Point and shoot the shotgun at yourself.\n[OTHER] - Point and shoot the shotgun at OTHER.\n");
             }
@@ -411,7 +415,15 @@ void playRound(int plrNum, struct roundInfo ri){
         }
       }
     }else{ //other player, waiting
-      printf("The circular machinery rotates the buck of the gun facing OTHER, signalling that it is their turn.\n");
+      //reset whoShot
+      int whoShot; //0 = OTHER, 1 = SELF
+      if (sameTurn == 1){ //still other players turn
+        printf("The circular machinery does not move.\n");
+        sleep(1);
+        printf("It is still OTHER's turn.\n");
+      }else{
+        printf("The circular machinery rotates the buck of the gun facing OTHER, signalling that it is their turn.\n");
+      }
       sleep(1);
       while (ri.turn != plrNum){
         printf("OTHER is deciding...\n");
@@ -451,32 +463,29 @@ void playRound(int plrNum, struct roundInfo ri){
           sleep(1);
         }
         if (ACTION == 1){
+          whoShot = 1;
           printf("OTHER aims the barrel towards you...\n");
           sleep(1);
           printf("You take a deep breath.\n");
           sleep(1);
         }
         if (ACTION == 2){
+          whoShot = 0;
           printf("OTHER holds the gun up to their chin...\n");
           sleep(1);
           printf("You watch solemnly.\n");
           sleep(1);
+          printf("...\n");
         }
         if (ACTION == 3){
-          printf("OTHER shot a BLANK.\n");
+          printf("Click...\n");
           sleep(1);
         }
         if (ACTION == 4){
-          printf("OTHER shot a LIVE.\n");
+          printf("BAM!\n");
           sleep(1);
         }
       }
-    }
-    if (plrNum == 0){
-      //player 1 client code here
-    }
-    if (plrNum == 1){
-      //player 2 client code here
     }
   }
   return;

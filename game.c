@@ -301,9 +301,15 @@ void playRound(int plrNum, struct roundInfo ri){
                 sleep(1);
                 printf("OTHER falls to the floor.\n");
                 sleep(1);
+                printf("The blood of OTHER spills onto the table.\n");
+                sleep(1);
+                printf("Suddenly, the defilibrators activate and restart OTHER's heartbeat.\n");
+                sleep(1);
+                printf("OTHER gets up.\n");
+                sleep(1);
                 printf("You rack the shotgun.\n");
                 sleep(1);
-                printf("A used live bullet pops out.\n");
+                printf("A used live shell pops out.\n");
                 sleep(1);
                 printf("The monitor beeps.\n");
                 sleep(1);
@@ -315,10 +321,89 @@ void playRound(int plrNum, struct roundInfo ri){
                 sleep(1);
                 printf("You rack the shotgun.\n");
                 sleep(1);
-                printf("A blank bullet pops out.\n");
+                printf("A blank shell pops out.\n");
               }
+              playRound(plrNum, ri); //restart the turn order
             }else if (strcmp(pickInput, "SELF\n") == 0){ //player shoots self
               invalid = 1; //valid command
+              //send info that gun is being aimed at self.
+              ACTION = 2;
+              bytes = sprintf(rIC, "%d-%d-%d-%d-%d-%d-%d", ri.firstTurn, ri.lives, ri.blanks, ri.plr1hp, ri.plr2hp, ri.turn, ACTION);
+              fd = open("wkp", O_WRONLY);
+              if (fd == -1){ //err during connection
+                printf("playRound: open error: %d: %s\n", errno, strerror(errno));
+              }
+              write(fd, rIC, bytes);
+              close(fd); //close pipe
+              //dialouge
+              printf("You aim the shotgun right below your chin. You can almost see down the barrel..\n");
+              sleep(1);
+              printf("Your hands tremble as you pull the trigger...\n");
+              sleep(1);
+              printf("...\n");
+              sleep(1);
+              invalid = 1; //valid command
+              //create info to send to other player
+              ri.firstTurn = 1; //no longer first turn, if it was
+              //pick bullet to be shot
+              int bullet = chooseBullet(ri.lives, ri.blanks);
+              //change vars accordingly
+              if (bullet == 0){ //LIVE
+                if (plrNum == 0){ //plr1 is shot
+                  ri.plr1hp -= 1;
+                }else{ //plr2 is shot
+                  ri.plr2hp -= 1;
+                }
+                if (ri.turn == 0){ //change turn
+                  ri.turn = 1;
+                }else{
+                  ri.turn = 0;
+                }
+                ri.lives -= 1;
+                ACTION = 4;
+              }else{ //BLANK [turn stays]
+                ri.blanks -= 1; //no one takes damage. but a blank is lost.
+                ACTION = 3;
+              }
+              //send data
+              bytes = sprintf(rIC, "%d-%d-%d-%d-%d-%d-%d", ri.firstTurn, ri.lives, ri.blanks, ri.plr1hp, ri.plr2hp, ri.turn, ACTION);
+              fd = open("wkp", O_WRONLY);
+              if (fd == -1){ //err during connection
+                printf("playRound: open error: %d: %s\n", errno, strerror(errno));
+              }
+              write(fd, rIC, bytes);
+              close(fd); //close pipe
+              //show dialouge
+              if (ACTION == 4){
+                printf("BAM!\n");
+                sleep(1);
+                printf("Silence.\n");
+                sleep(1);
+                printf("You feel the possible sweet release of death coming towards you...\n");
+                sleep(1);
+                printf("But as you were about to embrace it...\n");
+                sleep(1);
+                printf("BZZT!\n");
+                sleep(1);
+                printf("You are brought back to life as you feel a shock within your whole body.\n");
+                sleep(1);
+                printf("In front of you, lies a used live shell.\n");
+                sleep(1);
+                printf("The monitor beeps.\n");
+                sleep(1);
+                printf("You have lost a charge.\n");
+              }else if (ACTION == 3){
+                printf("Click...\n");
+                sleep(1);
+                printf("You take a deep breath of relief.\n");
+                sleep(1);
+                printf("You rack the shotgun.\n");
+                sleep(1);
+                printf("A blank bullet pops out.\n");
+                sleep(1);
+                printf("You have been given another turn.\n");
+              }
+              playRound(plrNum, ri);
             }else{ //invalid command
               printf("Invalid command. Current available arguments:\n[SELF] - Point and shoot the shotgun at yourself.\n[OTHER] - Point and shoot the shotgun at OTHER.\n");
             }
@@ -363,6 +448,26 @@ void playRound(int plrNum, struct roundInfo ri){
         //display info to current plr
         if (ACTION == 0){
           printf("OTHER picks up the shotgun.\n");
+          sleep(1);
+        }
+        if (ACTION == 1){
+          printf("OTHER aims the barrel towards you...\n");
+          sleep(1);
+          printf("You take a deep breath.\n");
+          sleep(1);
+        }
+        if (ACTION == 2){
+          printf("OTHER holds the gun up to their chin...\n");
+          sleep(1);
+          printf("You watch solemnly.\n");
+          sleep(1);
+        }
+        if (ACTION == 3){
+          printf("OTHER shot a BLANK.\n");
+          sleep(1);
+        }
+        if (ACTION == 4){
+          printf("OTHER shot a LIVE.\n");
           sleep(1);
         }
       }

@@ -5,13 +5,13 @@ int main(){
   connect();
   return 0;
 }
+
 /*=========================
   connect
   args: none
 
   either connects to an existing WKP if it was made (second client/player), or creates the WKP and asleeps connection (first client/player)
-  after connection, both clients run startRound(int plrNum, int turn)
-  creates a struct as well, ri, which stores roundInfo.
+  after connection, both clients run nameSetup(int plrNum)
 
   returns n/a
   =========================*/
@@ -27,16 +27,7 @@ void connect(){
     }
     printf("Connected!\n");
     close(fd); //close pipe
-    //setup struct for the game
-    struct roundInfo ri;
-    ri.firstTurn = 0;
-    ri.lives = 0;
-    ri.blanks = 0;
-    ri.plr1hp = 0;
-    ri.plr2hp = 0;
-    ri.turn = 0;
-    ri.roundNum = 0;
-    startRound(0, ri);
+    nameSetup(0);
   }else{ //player 2
     int fd = open("wkp", O_WRONLY); //connect to existing player 1
     if (fd == -1){ //if during connetion error happens
@@ -44,18 +35,98 @@ void connect(){
     }
     printf("Welcome. You have joined another player.\n");
     close(fd); //close pipe
-    //setup struct for the game
-    struct roundInfo ri;
-    ri.firstTurn = 0;
-    ri.lives = 0;
-    ri.blanks = 0;
-    ri.plr1hp = 0;
-    ri.plr2hp = 0;
-    ri.turn = 0;
-    ri.roundNum = 0;
-    startRound(1, ri);
+    nameSetup(1);
   }
   return;
+}
+
+/*=========================
+  nameSetup
+  args: plrNum, ri.
+
+  gets names and sends it to each other, then sends info to structs. plrNum differentiates the players
+  creates struct ri
+
+  returns n/a
+  =========================*/
+void nameSetup(int plrNum){
+  //setup name var
+  char input[7];
+  //dialouge
+  sleep(1);
+  printf("You walk into the club, late at night.\n");
+  sleep(1);
+  printf("You get situated in a room, with another person stood at the other side of the table.\n");
+  sleep(1);
+  printf("You shake hands, and prepare to begin.\n");
+  sleep(1);
+  printf("The dealer approaches you both. He gives you each a sheet of weathered paper.\n");
+  sleep(1);
+  printf("The paper looks dry, but you can make out a line at the bottom, requesting your signature.\n");
+  sleep(1);
+  printf("The dealer looks at you both calmly, then asks...\n");
+  sleep(1);
+  printf("\"Please sign the contract.\"\n");
+  sleep(1);
+  printf("You pick up the piece of paper, and a machine opens up to the side, which looks like a hole-puncher but with a mechanical keyboard?\n");
+  sleep(1);
+  printf("You start to type...\n");
+  sleep(1);
+  printf("Please sign the contract. (Type in your name, 6 characters maximum.)\n");
+  fgets(input, 7, stdin); //wait for player input
+  sleep(1);
+  printf("You sign... %s", input);
+  sleep(1);
+  //fix the \n
+  input[7] = '\0';
+  //setup struct for game
+  struct roundInfo ri;
+  ri.firstTurn = 0;
+  ri.lives = 0;
+  ri.blanks = 0;
+  ri.plr1hp = 0;
+  ri.plr2hp = 0;
+  ri.turn = 0;
+  ri.roundNum = 0;
+  if (plrNum == 0){ //client 1
+    ri.plr1 = input;
+    //send pipe (info abt plr1)
+    int fd = open("wkp", O_WRONLY);
+    if (fd == -1){ //if during connetion error happens
+      printf("nameSetup: open error: %d: %s\n", errno, strerror(errno));
+    }
+    write(fd, input, 7);
+    close(fd);
+    //recieve pipe (info abt plr2)
+    char input2[7];
+    int fd2 = open("wkp", O_RDONLY); //read from other plr
+    if (fd2 == -1){ //if during connetion error happens
+      printf("nameSetup: open error: %d: %s\n", errno, strerror(errno));
+    }
+    read(fd2, input2, 7);
+    close(fd2); //close pipe
+    ri.plr2 = input2;
+    startRound(plrNum, ri);
+  }else{ //client 2
+    ri.plr2 = input;
+    //recieve pipe (info abt plr1)
+    char input2[7];
+    int fd = open("wkp", O_RDONLY);
+    if (fd == -1){ //if during connetion error happens
+      printf("nameSetup: open error: %d: %s\n", errno, strerror(errno));
+    }
+    read(fd, input2, 7);
+    close(fd); //close pipe
+    ri.plr1 = input2;
+    //send pipe (info abt plr2)
+    int fd2 = open("wkp", O_WRONLY);
+    if (fd2 == -1){ //if during connetion error happens
+      printf("nameSetup: open error: %d: %s\n", errno, strerror(errno));
+    }
+    write(fd2, input, 7);
+    close(fd2);
+    startRound(0, ri);
+  }
 }
 
 /*=========================

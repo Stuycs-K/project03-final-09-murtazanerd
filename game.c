@@ -86,9 +86,9 @@ void nameSetup(int plrNum){
   ri.blanks = 0;
   ri.plr1hp = 0;
   ri.plr2hp = 0;
-  ri.turn = 0;
   ri.roundNum = 0;
   if (plrNum == 0){ //client 1
+    ri.turn = 0;
     ri.plr1 = input;
     //send pipe (info abt plr1)
     int fd = open("wkp", O_WRONLY);
@@ -108,6 +108,7 @@ void nameSetup(int plrNum){
     ri.plr2 = input2;
     startRound(plrNum, ri);
   }else{ //client 2
+    ri.turn = 1;
     ri.plr2 = input;
     //recieve pipe (info abt plr1)
     char input2[7];
@@ -208,7 +209,7 @@ void startRound(int plrNum, struct roundInfo ri){
       sleep(1);
       printf("It reads...\n");
       sleep(1);
-      printf("YOU: %d | OTHER: %d\n", hp, hp);
+      printf("%s: %d | %s: %d\n", ri.plr1, hp, ri.plr2, hp);
     }
     playRound(plrNum, ri, 0);
   }else{ //the player that recieves the shell order.

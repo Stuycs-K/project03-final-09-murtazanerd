@@ -91,7 +91,9 @@ void nameSetup(int plrNum){
     ri.turn = 0;
     ri.plr1 = input;
     //send pipe (info abt plr1)
+    printf("client 1: write\n");
     int fd = open("wkp", O_WRONLY);
+    printf("success\n");
     if (fd == -1){ //if during connetion error happens
       printf("nameSetup: open error: %d: %s\n", errno, strerror(errno));
     }
@@ -99,7 +101,9 @@ void nameSetup(int plrNum){
     close(fd);
     //recieve pipe (info abt plr2)
     char input2[7];
+    printf("client 1: read\n");
     int fd2 = open("wkp", O_RDONLY); //read from other plr
+    printf("success\n");
     if (fd2 == -1){ //if during connetion error happens
       printf("nameSetup: open error: %d: %s\n", errno, strerror(errno));
     }
@@ -112,16 +116,19 @@ void nameSetup(int plrNum){
     ri.plr2 = input;
     //recieve pipe (info abt plr1)
     char input2[7];
+    printf("client 2: read\n");
     int fd = open("wkp", O_RDONLY);
+    printf("success\n");
     if (fd == -1){ //if during connetion error happens
       printf("nameSetup: open error: %d: %s\n", errno, strerror(errno));
     }
     read(fd, input2, 7);
-    printf("read successful, client 2\n");
     close(fd); //close pipe
     ri.plr1 = input2;
     //send pipe (info abt plr2)
+    printf("client 2: write\n");
     int fd2 = open("wkp", O_WRONLY);
+    printf("success\n");
     if (fd2 == -1){ //if during connetion error happens
       printf("nameSetup: open error: %d: %s\n", errno, strerror(errno));
     }
@@ -255,7 +262,7 @@ void startRound(int plrNum, struct roundInfo ri){
       sleep(1);
       printf("It reads...\n");
       sleep(1);
-      printf("YOU: %d | OTHER: %d\n", ri.plr1hp, ri.plr1hp);
+      printf("YOU: %d | OTHER: %d\n", ri.plr1hp, ri.plr2hp);
     }
     playRound(plrNum, ri, 0);
   }

@@ -117,6 +117,7 @@ void nameSetup(int plrNum){
       printf("nameSetup: open error: %d: %s\n", errno, strerror(errno));
     }
     read(fd, input2, 7);
+    printf("read successful, client 2\n");
     close(fd); //close pipe
     ri.plr1 = input2;
     //send pipe (info abt plr2)

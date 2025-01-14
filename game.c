@@ -35,6 +35,7 @@ void connect(){
     ri.plr1hp = 0;
     ri.plr2hp = 0;
     ri.turn = 0;
+    ri.roundNum = 0;
     startRound(0, ri);
   }else{ //player 2
     int fd = open("wkp", O_WRONLY); //connect to existing player 1
@@ -51,6 +52,7 @@ void connect(){
     ri.plr1hp = 0;
     ri.plr2hp = 0;
     ri.turn = 0;
+    ri.roundNum = 0;
     startRound(1, ri);
   }
   return;
@@ -66,6 +68,20 @@ void connect(){
   returns n/a
   =========================*/
 void startRound(int plrNum, struct roundInfo ri){
+  //both players
+  if (ri.firstTurn == 0){
+    ri.roundNum += 1;
+    if (ri.roundNum >= 4){
+      gameOver();
+      return;
+    }
+    printf("A monitor to your side beeps.\n");
+    sleep(1);
+    printf("It reads...\n");
+    sleep(1);
+    printf("[[ ROUND %d ]]\n", ri.roundNum);
+    sleep(1);
+  }
   if (plrNum == ri.turn){ //the player that loads the gun. creates the shell order, and sends information regarding it to the wkp.
     //set up # of lives and # of blanks
     srand(time(NULL));
@@ -174,6 +190,31 @@ void startRound(int plrNum, struct roundInfo ri){
 }
 
 /*=========================
+  gameOver
+  args: n/a
+
+  finishes the game, displaying text.
+
+  returns n/a.
+  =========================*/
+void gameOver(){
+  printf("3 rounds. That's enough.\n");
+  sleep(1);
+  printf("You've both played well.\n");
+  sleep(1);
+  printf("You pat each other on the back, and part ways.\n");
+  sleep(1);
+  printf("When you walk out the entrance of the club...\n");
+  sleep(1);
+  printf("You can see the sun start to rise.\n");
+  sleep(1);
+  printf("Thank you for playing my version of Buckshot Roulette!\n");
+  sleep(1);
+  printf("Hope you had at least a little bit of fun.\n");
+  return;
+}
+
+/*=========================
   chooseBullet
   args: lives, blanks
 
@@ -208,6 +249,38 @@ int chooseBullet(int lives, int blanks){
   returns n/a
   =========================*/
 void playRound(int plrNum, struct roundInfo ri, int sameTurn){
+  //check if someone is dead
+  if (ri.plr1hp == 0 || ri.plr2hp == 0){
+    if (plrNum == ri.turn){ //winner
+      printf("The monitor beeps.\n");
+      sleep(1);
+      printf("It plays a jingle, and text is displayed: \"YOU WON!\"\n");
+      sleep(1);
+      printf("A mechanism pulls down a briefcase from the top of the room, and shoves it towards you...\n");
+      sleep(1);
+      printf("You open it to see the wads of cash you were expecting, then put it aside.\n");
+      sleep(1);
+      printf("The night is still young.\n");
+      sleep(1);
+      ri.firstTurn = 0;
+      startRound(plrNum, ri);
+    }else{ //loser
+      printf("The monitor beeps.\n");
+      sleep(1);
+      printf("It plays a jingle, and text is displayed: \"OTHER WON!\"\n");
+      sleep(1);
+      printf("A mechanism pulls down a briefcase from the top of the room, and shoves it towards OTHER...\n");
+      sleep(1);
+      printf("You grudgingly watch OTHER enjoy his rewards.\n");
+      sleep(1);
+      printf("But it's okay.\n");
+      sleep(1);
+      printf("The night is still young.\n");
+      sleep(1);
+      ri.firstTurn = 0;
+      startRound(plrNum, ri);
+    }
+  }
   //check if the current round is over (no shells left)
   if (ri.lives == 0 && ri.blanks == 0){
     startRound(plrNum, ri); //reload the shells
@@ -409,9 +482,11 @@ void playRound(int plrNum, struct roundInfo ri, int sameTurn){
                 playRound(plrNum, ri, 1);
               }
             }else{ //invalid command
-              printf("Invalid command. Current available arguments:\n[SELF] - Point and shoot the shotgun at yourself.\n[OTHER] - Point and shoot the shotgun at OTHER.\n");
+              printf("Invalid command. Current available commands:\n[SELF] - Point and shoot the shotgun at yourself.\n[OTHER] - Point and shoot the shotgun at OTHER.\n");
             }
           }
+        }else{
+          printf("Invalid command. Current available commands:\n[SHOOT] - Pick up the shotgun, and get ready to shoot someone. (You can't put the shotgun down if you have picked it up.)\n");
         }
       }
     }else{ //other player, waiting

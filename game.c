@@ -480,10 +480,64 @@ void playRound(int plrNum, struct roundInfo ri, int sameTurn){
         if (ACTION == 3){
           printf("Click...\n");
           sleep(1);
+          if (whoShot == 0){
+            printf("OTHER takes a deep breath of relief.\n");
+            sleep(1);
+            printf("OTHER racks the shotgun.\n");
+            sleep(1);
+            printf("A blank bullet pops out.\n");
+            sleep(1);
+            printf("OTHER gets another turn.\n");
+            sleep(1);
+            playRound(plrNum, ri, 1);
+          }else{
+            printf("Your take a deep breath of relief.\n");
+            sleep(1);
+            printf("How unfortunate for OTHER.\n");
+            sleep(1);
+            printf("OTHER racks the shotgun.\n");
+            sleep(1);
+            printf("A blank bullet pops out.\n");
+            sleep(1);
+            playRound(plrNum, ri, 0);
+          }
         }
         if (ACTION == 4){
           printf("BAM!\n");
           sleep(1);
+          if (whoShot == 0){
+            printf("OTHER falls off the table.\n");
+            sleep(1);
+            printf("A used live bullet falls out the shotgun.\n");
+            sleep(1);
+            printf("...\n");
+            sleep(1);
+            printf("OTHER gets up.\n");
+            sleep(1);
+            printf("The monitor beeps.\n");
+            sleep(1);
+            printf("OTHER has lost a charge.\n");
+            sleep(1);
+            playRound(plrNum, ri, 0);
+          }else{
+            printf("Silence.\n");
+            sleep(1);
+            printf("You feel the possible sweet release of death coming towards you...\n");
+            sleep(1);
+            printf("But as you were about to embrace it...\n");
+            sleep(1);
+            printf("BZZT!\n");
+            sleep(1);
+            printf("You are brought back to life as you feel a shock within your whole body.\n");
+            sleep(1);
+            printf("In front of you, lies a used live shell.\n");
+            sleep(1);
+            printf("The monitor beeps.\n");
+            sleep(1);
+            printf("You have lost a charge.\n");
+            sleep(1);
+            playRound(plrNum, ri, 0);
+          }
         }
       }
     }

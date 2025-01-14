@@ -40,5 +40,12 @@ New function: `receiveRound`. Appropriate details added. `(25 min)`
 ### 2025-01-10 - chooseBullet, progress on playRound
 `10:20 - 11:01 (Homework time except I do it before class today because I have a free then)`  
 Created a new function `chooseBullet` and completed it. `(20 min)`  
-`playRound`: made more progress on it, adding live and blank functionality. `(21 min)`  
+`playRound`: made more progress on it, adding live and blank functionality. `(21 min)` 
+   
 Removed `receiveRound`. `(less than a minute)`  
+
+### 2025-01-14 - full working (sort of) gmae!!!
+`10:20 - 11:01 (Classwork time for yesterday)`  
+Finished OTHER dialouge for `playRound`. `(25 min)`  
+Got a full working game! There are still some bugs here and there, but after creating the `endGame` function and doing some minor tweaks to dialouge and player tracking in `startRound` it's done! Full game. At least, the skeleton ver. `(16 min)`  
+`12:21 -`

@@ -88,7 +88,7 @@ void nameSetup(int plrNum){
     printf("You sign... %s", input);
     sleep(1);
     //fix the \n
-    input[7] = '\0';
+    input[strlen(input) - 1] = '\0';
     ri.plr1 = input;
     //send pipe (info abt plr1)
     int fd = open("wkp", O_WRONLY);
@@ -135,7 +135,6 @@ void nameSetup(int plrNum){
     close(fd); //close pipe
     ri.plr1 = input2;
     //send pipe (info abt plr2)
-    printf("client 2: write\n");
     int fd2 = open("wkp", O_WRONLY);
     printf("The dealer now gives you a contract.\n");
     sleep(1);
@@ -151,10 +150,10 @@ void nameSetup(int plrNum){
     sleep(1);
     printf("Please sign the contract. (Type in your name, 6 characters maximum.)\n");
     fgets(input, 7, stdin); //wait for player input
-    input[7] = '\0';
+    input[strlen(input) - 1] = '\0';
     ri.plr2 = input;
     sleep(1);
-    printf("You sign... %s", input);
+    printf("You sign... %s\n", input);
     if (fd2 == -1){ //if during connetion error happens
       printf("nameSetup: open error: %d: %s\n", errno, strerror(errno));
     }
@@ -243,7 +242,7 @@ void startRound(int plrNum, struct roundInfo ri){
       sleep(1);
       printf("It reads...\n");
       sleep(1);
-      printf("%s: %d | %s: %d\n", ri.plr1, hp, ri.plr2, hp);
+      printf("[ %s: %d | %s: %d ]\n", ri.plr1, hp, ri.plr2, hp);
     }
     playRound(plrNum, ri, 0);
   }else{ //the player that recieves the shell order.
@@ -269,7 +268,11 @@ void startRound(int plrNum, struct roundInfo ri){
     strsep(&curr, "-");
     ri.turn = (*curr - '0');
     //display info to current plr
-    printf("You watch OTHER load the shells into the shotgun...\n");
+    if (plrNum == 0){
+      printf("You watch %s load the shells into the shotgun...\n", ri.plr2);
+    }else{
+      printf("You watch %s load the shells into the shotgun...\n", ri.plr1);
+    }
     sleep(1);
     if (ri.lives == 1){
       printf("They load %d live bullet.\n", ri.lives);
@@ -288,7 +291,7 @@ void startRound(int plrNum, struct roundInfo ri){
       sleep(1);
       printf("It reads...\n");
       sleep(1);
-      printf("YOU: %d | OTHER: %d\n", ri.plr1hp, ri.plr2hp);
+      printf("[ %s: %d | %s: %d ]\n", ri.plr1, ri.plr1hp, ri.plr2, ri.plr2hp);
     }
     playRound(plrNum, ri, 0);
   }
@@ -357,7 +360,7 @@ int chooseBullet(int lives, int blanks){
 void playRound(int plrNum, struct roundInfo ri, int sameTurn){
   //check if someone is dead
   if (ri.plr1hp == 0 || ri.plr2hp == 0){
-    if (plrNum == ri.turn){ //winner
+    if (plrNum != ri.turn){ //winner
       printf("The monitor beeps.\n");
       sleep(1);
       printf("It plays a jingle, and text is displayed: \"YOU WON!\"\n");
@@ -403,7 +406,11 @@ void playRound(int plrNum, struct roundInfo ri, int sameTurn){
       while(ri.turn == plrNum){
         printf("The table is yours.\n");
         sleep(1);
-        printf("[ YOU: %d | OTHER: %d ]\n[ SHOOT ]\n", ri.plr1hp, ri.plr2hp); //display stats
+        if (plrNum == 0){
+          printf("[ YOU: %d | %s: %d ]\n[ SHOOT ]\n", ri.plr1hp, ri.plr2, ri.plr2hp); //display stats
+        }else{
+          printf("[ YOU: %d | %s: %d ]\n[ SHOOT ]\n", ri.plr2hp, ri.plr1, ri.plr1hp); //display stats
+        }
         char input[20]; //increase for other things in future
         fgets(input, 20, stdin); //wait for player input
         if (strcmp(input, "SHOOT\n") == 0){ //if player selected SHOOT
@@ -426,10 +433,16 @@ void playRound(int plrNum, struct roundInfo ri, int sameTurn){
           printf("There is no going back now.\n");
           while (invalid == 0){
             sleep(1);
-            printf("Who will you shoot?\n[OTHER] [SELF]\n(Shooting yourself with a blank skips OTHER's turn.)\n");
+            if (plrNum == 0){
+              printf("Who will you shoot?\n[%s] [SELF]\n(Shooting yourself with a blank skips %s's turn.)\n", ri.plr2, ri.plr2);
+            }else{
+              printf("Who will you shoot?\n[%s] [SELF]\n(Shooting yourself with a blank skips %s's turn.)\n", ri.plr1, ri.plr1);
+            }
             char pickInput[20];
             fgets(pickInput, 20, stdin); //wait for player input
-            if (strcmp(pickInput, "OTHER\n") == 0){ //player shot at OTHER
+            //parse pickInput
+            pickInput[strlen(pickInput) - 1] = '\0';
+            if ((strcmp(pickInput, ri.plr1) == 0 && plrNum == 1) || (strcmp(pickInput, ri.plr2) == 0 && plrNum == 0)){ //player shot at OTHER
               //send info that gun is being aimed at other.
               ACTION = 1;
               bytes = sprintf(rIC, "%d-%d-%d-%d-%d-%d-%d", ri.firstTurn, ri.lives, ri.blanks, ri.plr1hp, ri.plr2hp, ri.turn, ACTION);
@@ -440,7 +453,11 @@ void playRound(int plrNum, struct roundInfo ri, int sameTurn){
               write(fd, rIC, bytes);
               close(fd); //close pipe
               //dialouge
-              printf("You aim the shotgun at OTHER...\n");
+              if (plrNum == 0){
+                printf("You aim the shotgun at %s...\n", ri.plr2);
+              }else{
+                printf("You aim the shotgun at %s...\n", ri.plr1);
+              }
               sleep(1);
               printf("Your hands tremble as you pull the trigger...\n");
               sleep(1);
@@ -481,13 +498,29 @@ void playRound(int plrNum, struct roundInfo ri, int sameTurn){
               if (ACTION == 4){
                 printf("BAM!\n");
                 sleep(1);
-                printf("OTHER falls to the floor.\n");
+                if (plrNum == 0){
+                  printf("%s falls to the floor.\n", ri.plr2);
+                }else{
+                  printf("%s falls to the floor.\n", ri.plr1);
+                }
                 sleep(1);
-                printf("The blood of OTHER spills onto the table.\n");
+                if (plrNum == 0){
+                  printf("The blood of %s spills onto the table.\n", ri.plr2);
+                }else{
+                  printf("The blood of %s spills onto the table.\n", ri.plr1);
+                }
                 sleep(1);
-                printf("Suddenly, the defilibrators activate and restart OTHER's heartbeat.\n");
+                if (plrNum == 0){
+                  printf("Suddenly, the defilibrators activate and restart %s's heartbeat.\n", ri.plr2);
+                }else{
+                  printf("Suddenly, the defilibrators activate and restart %s's heartbeat.\n", ri.plr1);
+                }
                 sleep(1);
-                printf("OTHER gets up.\n");
+                if (plrNum == 0){
+                  printf("%s gets up.\n", ri.plr2);
+                }else{
+                  printf("%s gets up.\n", ri.plr1);
+                }
                 sleep(1);
                 printf("You rack the shotgun.\n");
                 sleep(1);
@@ -495,7 +528,11 @@ void playRound(int plrNum, struct roundInfo ri, int sameTurn){
                 sleep(1);
                 printf("The monitor beeps.\n");
                 sleep(1);
-                printf("OTHER has lost a charge.\n");
+                if (plrNum == 0){
+                  printf("%s has lost a charge.\n", ri.plr2);
+                }else{
+                  printf("%s has lost a charge.\n", ri.plr1);
+                }
               }else if (ACTION == 3){
                 printf("Click...\n");
                 sleep(1);

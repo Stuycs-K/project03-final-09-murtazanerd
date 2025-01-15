@@ -44,8 +44,12 @@ Created a new function `chooseBullet` and completed it. `(20 min)`
    
 Removed `receiveRound`. `(less than a minute)`  
 
-### 2025-01-14 - full working (sort of) gmae!!!
+### 2025-01-14 - full working (sort of) game!!!
 `10:20 - 11:01 (Classwork time for yesterday)`  
 Finished OTHER dialouge for `playRound`. `(25 min)`  
 Got a full working game! There are still some bugs here and there, but after creating the `endGame` function and doing some minor tweaks to dialouge and player tracking in `startRound` it's done! Full game. At least, the skeleton ver. `(16 min)`  
-`12:21 -`
+`12:21 - 1:19 (Homework time for yesterday)`  
+Began naming system (precisely, obtaining names from the two clients). `(~1 hour)`  
+`2:10 - 2:50 (Class)`  
+Began replacing all the OTHER's with appropriate names, using if statements. `(36 min)`  
+Additionally tweaked a few bugs. `(5 min)`

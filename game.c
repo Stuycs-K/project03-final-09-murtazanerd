@@ -25,8 +25,9 @@ void connect(){
     if (fd == -1){ //if during connetion error happens
       printf("connect: open error: %d: %s\n", errno, strerror(errno));
     }
-    printf("Connected!\n");
+    printf("A player has joined!\n");
     close(fd); //close pipe
+    sleep(1);
     nameSetup(0);
   }else{ //player 2
     int fd = open("wkp", O_WRONLY); //connect to existing player 1
@@ -559,7 +560,7 @@ void playRound(int plrNum, struct roundInfo ri, int sameTurn){
                 printf("A blank shell pops out.\n");
               }
               playRound(plrNum, ri, 0); //restart the turn order
-            }else if (strcmp(pickInput, "SELF\n") == 0){ //player shoots self
+            }else if (strcmp(pickInput, "SELF") == 0){ //player shoots self
               invalid = 1; //valid command
               //send info that gun is being aimed at self.
               ACTION = 2;
@@ -669,9 +670,9 @@ void playRound(int plrNum, struct roundInfo ri, int sameTurn){
       sleep(1);
       while (ri.turn != plrNum){
         if (plrNum == 0){
-          printf("%s is deciding...\n", ri.plr2);
+          printf("%s decides your fate...\n", ri.plr2);
         }else{
-          printf("%s is deciding...\n", ri.plr1);
+          printf("%s decides your fate...\n", ri.plr1);
         }
         //prepare char to read
         char rIC[22];

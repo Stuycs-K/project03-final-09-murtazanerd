@@ -53,3 +53,8 @@ Began naming system (precisely, obtaining names from the two clients). `(~1 hour
 `2:10 - 2:50 (Class)`  
 Began replacing all the OTHER's with appropriate names, using if statements. `(36 min)`  
 Additionally tweaked a few bugs. `(5 min)`
+
+### 2025-01-15 - Naming done + more tweaks
+`1:00 - 3:00 (Home)`  
+Finished the rest of naming dialouge. `(40 mins)`  
+Adjustments to dialouge time. `(10 min)`  

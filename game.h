@@ -24,7 +24,6 @@ struct roundInfo {
 void startRound(int plrNum, struct roundInfo ri);
 void playRound(int plrNum, struct roundInfo ri, int sameTurn);
 void gameOver();
-struct roundInfo translate(char * buff);
 int chooseBullet(int lives, int blanks);
 void nameSetup(int plrNum);
 #endif

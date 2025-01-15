@@ -363,7 +363,11 @@ void playRound(int plrNum, struct roundInfo ri, int sameTurn){
     if (plrNum != ri.turn){ //winner
       printf("The monitor beeps.\n");
       sleep(1);
-      printf("It plays a jingle, and text is displayed: \"YOU WON!\"\n");
+      if (plrNum == 0){
+        printf("It plays a jingle, and text is displayed: \"%s WON!\"\n", ri.plr1);
+      }else{
+        printf("It plays a jingle, and text is displayed: \"%s WON!\"\n", ri.plr2);
+      }
       sleep(1);
       printf("A mechanism pulls down a briefcase from the top of the room, and shoves it towards you...\n");
       sleep(1);
@@ -376,11 +380,23 @@ void playRound(int plrNum, struct roundInfo ri, int sameTurn){
     }else{ //loser
       printf("The monitor beeps.\n");
       sleep(1);
-      printf("It plays a jingle, and text is displayed: \"OTHER WON!\"\n");
+      if (plrNum == 0){
+        printf("It plays a jingle, and text is displayed: \"%s WON!\"\n", ri.plr2);
+      }else{
+        printf("It plays a jingle, and text is displayed: \"%s WON!\"\n", ri.plr1);
+      }
       sleep(1);
-      printf("A mechanism pulls down a briefcase from the top of the room, and shoves it towards OTHER...\n");
+      if (plrNum == 0){
+        printf("A mechanism pulls down a briefcase from the top of the room, and shoves it towards %s...\n", ri.plr2);
+      }else{
+        printf("A mechanism pulls down a briefcase from the top of the room, and shoves it towards %s...\n", ri.plr1);
+      }
       sleep(1);
-      printf("You grudgingly watch OTHER enjoy his rewards.\n");
+      if (plrNum == 0){
+        printf("You grudgingly watch %s enjoy their rewards.\n", ri.plr2);
+      }else{
+        printf("You grudgingly watch %s enjoy their rewards.\n", ri.plr1);
+      }
       sleep(1);
       printf("But it's okay.\n");
       sleep(1);
@@ -638,13 +654,25 @@ void playRound(int plrNum, struct roundInfo ri, int sameTurn){
       if (sameTurn == 1){ //still other players turn
         printf("The circular machinery does not move.\n");
         sleep(1);
-        printf("It is still OTHER's turn.\n");
+        if (plrNum == 0){
+          printf("It is still %s's turn.\n", ri.plr2);
+        }else{
+          printf("It is still %s's turn.\n", ri.plr1);
+        }
       }else{
-        printf("The circular machinery rotates the buck of the gun facing OTHER, signalling that it is their turn.\n");
+        if (plrNum == 0){
+          printf("The circular machinery rotates the buck of the gun facing %s, signalling that it is their turn.\n", ri.plr2);
+        }else{
+          printf("The circular machinery rotates the buck of the gun facing %s, signalling that it is their turn.\n", ri.plr1);
+        }
       }
       sleep(1);
       while (ri.turn != plrNum){
-        printf("OTHER is deciding...\n");
+        if (plrNum == 0){
+          printf("%s is deciding...\n", ri.plr2);
+        }else{
+          printf("%s is deciding...\n", ri.plr1);
+        }
         //prepare char to read
         char rIC[22];
         int fd = open("wkp", O_RDONLY); //read from other plr
@@ -677,19 +705,31 @@ void playRound(int plrNum, struct roundInfo ri, int sameTurn){
         //more soon for other commands.
         //display info to current plr
         if (ACTION == 0){
-          printf("OTHER picks up the shotgun.\n");
+          if (plrNum == 0){
+            printf("%s picks up the shotgun.\n", ri.plr2);
+          }else{
+            printf("%s picks up the shotgun.\n", ri.plr1);
+          }
           sleep(1);
         }
         if (ACTION == 1){
           whoShot = 1;
-          printf("OTHER aims the barrel towards you...\n");
+          if (plrNum == 0){
+            printf("%s aims the barrel towards you...\n", ri.plr2);
+          }else{
+            printf("%s aims the barrel towards you...\n", ri.plr1);
+          }
           sleep(1);
           printf("You take a deep breath.\n");
           sleep(1);
         }
         if (ACTION == 2){
           whoShot = 0;
-          printf("OTHER holds the gun up to their chin...\n");
+          if (plrNum == 0){
+            printf("%s holds the gun up to their chin...\n", ri.plr2);
+          }else{
+            printf("%s holds the gun up to their chin...\n", ri.plr1);
+          }
           sleep(1);
           printf("You watch solemnly.\n");
           sleep(1);
@@ -699,21 +739,41 @@ void playRound(int plrNum, struct roundInfo ri, int sameTurn){
           printf("Click...\n");
           sleep(1);
           if (whoShot == 0){
-            printf("OTHER takes a deep breath of relief.\n");
+            if (plrNum == 0){
+              printf("%s takes a deep breath of relief.\n", ri.plr2);
+            }else{
+              printf("%s takes a deep breath of relief.\n", ri.plr1);
+            }
             sleep(1);
-            printf("OTHER racks the shotgun.\n");
+            if (plrNum == 0){
+              printf("%s racks the shotgun.\n", ri.plr2);
+            }else{
+              printf("%s racks the shotgun.\n", ri.plr1);
+            }
             sleep(1);
             printf("A blank bullet pops out.\n");
             sleep(1);
-            printf("OTHER gets another turn.\n");
+            if (plrNum == 0){
+              printf("%s gets another turn.\n", ri.plr2);
+            }else{
+              printf("%s gets another turn.\n", ri.plr1);
+            }
             sleep(1);
             playRound(plrNum, ri, 1);
           }else{
             printf("Your take a deep breath of relief.\n");
             sleep(1);
-            printf("How unfortunate for OTHER.\n");
+            if (plrNum == 0){
+              printf("How unfortunate for %s.\n", ri.plr2);
+            }else{
+              printf("How unfortunate for %s.\n", ri.plr1);
+            }
             sleep(1);
-            printf("OTHER racks the shotgun.\n");
+            if (plrNum == 0){
+              printf("%s racks the shotgun.\n", ri.plr2);
+            }else{
+              printf("%s racks the shotgun.\n", ri.plr1);
+            }
             sleep(1);
             printf("A blank bullet pops out.\n");
             sleep(1);
@@ -724,17 +784,29 @@ void playRound(int plrNum, struct roundInfo ri, int sameTurn){
           printf("BAM!\n");
           sleep(1);
           if (whoShot == 0){
-            printf("OTHER falls off the table.\n");
+            if (plrNum == 0){
+              printf("%s falls off the table.\n", ri.plr2);
+            }else{
+              printf("%s falls off the table.\n", ri.plr1);
+            }
             sleep(1);
             printf("A used live bullet falls out the shotgun.\n");
             sleep(1);
             printf("...\n");
             sleep(1);
-            printf("OTHER gets up.\n");
+            if (plrNum == 0){
+              printf("%s gets up.\n", ri.plr2);
+            }else{
+              printf("%s gets up.\n", ri.plr1);
+            }
             sleep(1);
             printf("The monitor beeps.\n");
             sleep(1);
-            printf("OTHER has lost a charge.\n");
+            if (plrNum == 0){
+              printf("%s has lost a charge.\n", ri.plr2);
+            }else{
+              printf("%s has lost a charge.\n", ri.plr1);
+            }
             sleep(1);
             playRound(plrNum, ri, 0);
           }else{
@@ -761,23 +833,4 @@ void playRound(int plrNum, struct roundInfo ri, int sameTurn){
     }
   }
   return;
-}
-
-/*=========================
-  translate
-  args: buff
-
-  translates messages sent by the WKPs into structs that can be read. translate should be used at the end of receiving clients' READ buffer.
-
-  returns struct roundInfo
-  =========================*/
-struct roundInfo translate(char * buff){
-  struct roundInfo s; //blank
-  s.firstTurn = 0;
-  s.lives = 0;
-  s.blanks = 0;
-  s.plr1hp = 0;
-  s.plr2hp = 0;
-  s.turn = 0;
-  return s;
 }

@@ -62,3 +62,5 @@ Adjustments to dialouge time. `(10 min)`
 ### 2025-01-16 - signal troubles
 `10:20 - 11:01 (missed class, yesterday)`  
 Attempting signal handling, successfully got signal throwback to one client but not to the other. `(41 min)`  
+`2:10 - 2:50 (class)`  
+Attempted signal handling. Made some progress. Stuck on clients sending pid information to each other without blocking. `(41 min)`

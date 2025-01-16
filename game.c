@@ -1,5 +1,7 @@
 #include "game.h"
 
+//group id: 16
+
 struct roundInfo ri; //global var
 
 /*=========================
@@ -16,6 +18,7 @@ static void sighandler(int signo){
     printf("sigint detected!\n");
     if (getpid() == ri.plr1pid){
       printf("you are client 1\n");
+      printf("client 1 pid %d\n client 2 pid %d\n", ri.plr1pid, ri.plr2pid);
       if (kill(ri.plr2pid, SIGTERM) == -1){
         printf("sighandler: kill error: %d: %s\n", errno, strerror(errno));
       } //kill cli 2, first
@@ -99,6 +102,25 @@ void nameSetup(int plrNum){
   ri.turn = 0;
   if (plrNum == 0){ //client 1
     ri.plr1pid = getpid();
+    //get plr2 pid send plr1 pid
+    // read from plr 2
+    char parsepid[20]; //id to parse int three_int = three_char - '0';
+    int other = open("wkp", O_RDONLY);
+    if (other == -1){ //open error
+      printf("nameSetup: open error: %d: %s\n", errno, strerror(errno));
+    }
+    read(other, parsepid, 20);
+    ri.plr2pid = * parsepid - '0';
+    close(other);
+    // write to plr 2
+    other = open("wkp", O_WRONLY);
+    if (other == -1){ //open err
+      printf("nameSetup: open error: %d: %s\n", errno, strerror(errno));
+    }
+    char returnpid[20]; //pid to send
+    sprintf(returnpid, "%d", getpid());
+    write(other, returnpid, 20);
+    close(other);
     //setup name var
     char input[7];
     //dialouge
@@ -136,6 +158,7 @@ void nameSetup(int plrNum){
     }
     write(fd, input, 7);
     close(fd);
+    sleep(1);
     //recieve pipe (info abt plr2)
     char input2[7];
     printf("The dealer now gives the other person a contract.\n");
@@ -152,6 +175,26 @@ void nameSetup(int plrNum){
     startRound(plrNum, ri);
   }else{ //client 2
     ri.plr2pid = getpid();
+    //get plr1 pid send plr2 pid
+    // write to plr 1
+    int other = open("wkp", O_WRONLY);
+    if (other == -1){ //open err
+      printf("nameSetup: open error: %d: %s\n", errno, strerror(errno));
+    }
+    char returnpid[20]; //pid to send
+    sprintf(returnpid, "%d", getpid());
+    write(other, returnpid, 20);
+    close(other);
+    sleep(1);
+    // read from plr 2
+    char parsepid[20]; //id to parse int three_int = three_char - '0';
+    other = open("wkp", O_RDONLY);
+    if (other == -1){ //open error
+      printf("nameSetup: open error: %d: %s\n", errno, strerror(errno));
+    }
+    read(other, parsepid, 20);
+    ri.plr1pid = * parsepid - '0';
+    close(other);
     //setup name var
     char input[7];
     //dialouge

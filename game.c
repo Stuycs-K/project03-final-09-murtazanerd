@@ -1,9 +1,31 @@
 #include "game.h"
 
+struct roundInfo ri; //global var
+
 //main
 int main(){
   connect();
   return 0;
+}
+
+/*=========================
+  sighandler
+  args: signo, struct roundInfo ri
+
+  function for handling signals. using ri to somehow communicate to both clients
+
+  returns n/a
+  =========================*/
+static void sighandler(int signo){
+  if (signo == SIGINT){
+    if (kill(ri.plr1pid, SIGTERM) == -1){
+      printf("sighandler: kill error: %d: %s\n", errno, strerror(errno));
+    } //kill cli 1
+    if (kill(ri.plr2pid, SIGTERM) == -1){
+      printf("sighandler: kill error: %d: %s\n", errno, strerror(errno));
+    } //kill cli 2
+    printf("kills ran\n");
+  }
 }
 
 /*=========================
@@ -52,7 +74,7 @@ void connect(){
   =========================*/
 void nameSetup(int plrNum){
   //setup struct for game
-  struct roundInfo ri;
+  // struct roundInfo ri;
   ri.firstTurn = 0;
   ri.lives = 0;
   ri.blanks = 0;
@@ -61,6 +83,7 @@ void nameSetup(int plrNum){
   ri.roundNum = 0;
   ri.turn = 0;
   if (plrNum == 0){ //client 1
+    ri.plr1pid = getpid();
     //setup name var
     char input[7];
     //dialouge
@@ -113,6 +136,7 @@ void nameSetup(int plrNum){
     printf("They have signed their contract.\n");
     startRound(plrNum, ri);
   }else{ //client 2
+    ri.plr2pid = getpid();
     //setup name var
     char input[7];
     //dialouge
@@ -174,6 +198,7 @@ void nameSetup(int plrNum){
   returns n/a
   =========================*/
 void startRound(int plrNum, struct roundInfo ri){
+  signal(SIGINT, sighandler);
   //both players
   if (ri.firstTurn == 0){
     ri.roundNum += 1;

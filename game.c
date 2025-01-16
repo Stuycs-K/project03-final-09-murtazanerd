@@ -2,12 +2,6 @@
 
 struct roundInfo ri; //global var
 
-//main
-int main(){
-  connect();
-  return 0;
-}
-
 /*=========================
   sighandler
   args: signo, struct roundInfo ri
@@ -26,6 +20,13 @@ static void sighandler(int signo){
     } //kill cli 2
     printf("kills ran\n");
   }
+}
+
+//main
+int main(){
+  signal(SIGINT, sighandler);
+  connect();
+  return 0;
 }
 
 /*=========================
@@ -198,7 +199,6 @@ void nameSetup(int plrNum){
   returns n/a
   =========================*/
 void startRound(int plrNum, struct roundInfo ri){
-  signal(SIGINT, sighandler);
   //both players
   if (ri.firstTurn == 0){
     ri.roundNum += 1;

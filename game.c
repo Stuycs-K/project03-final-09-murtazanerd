@@ -11,7 +11,9 @@ struct roundInfo ri; //global var
   returns n/a
   =========================*/
 static void sighandler(int signo){
+  printf("sighandler ran!\n");
   if (signo == SIGINT){
+    printf("sigint detected!\n");
     if (kill(ri.plr1pid, SIGTERM) == -1){
       printf("sighandler: kill error: %d: %s\n", errno, strerror(errno));
     } //kill cli 1

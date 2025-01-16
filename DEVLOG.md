@@ -55,6 +55,10 @@ Began replacing all the OTHER's with appropriate names, using if statements. `(3
 Additionally tweaked a few bugs. `(5 min)`
 
 ### 2025-01-15 - Naming done + more tweaks
-`1:00 - 3:00 (Home)`  
+`1:00 - 3:00 (Home, yesterday)`  
 Finished the rest of naming dialouge. `(40 mins)`  
 Adjustments to dialouge time. `(10 min)`  
+
+### 2025-01-16 - signal troubles
+`10:20 - 11:01 (missed class, yesterday)`  
+Attempting signal handling, successfully got signal throwback to one client but not to the other. `(41 min)`  

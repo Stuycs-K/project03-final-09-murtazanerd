@@ -14,13 +14,23 @@ static void sighandler(int signo){
   printf("sighandler ran!\n");
   if (signo == SIGINT){
     printf("sigint detected!\n");
-    if (kill(ri.plr1pid, SIGTERM) == -1){
-      printf("sighandler: kill error: %d: %s\n", errno, strerror(errno));
-    } //kill cli 1
-    if (kill(ri.plr2pid, SIGTERM) == -1){
-      printf("sighandler: kill error: %d: %s\n", errno, strerror(errno));
-    } //kill cli 2
-    printf("kills ran\n");
+    if (getpid() == ri.plr1pid){
+      if (kill(ri.plr2pid, SIGTERM) == -1){
+        printf("sighandler: kill error: %d: %s\n", errno, strerror(errno));
+      } //kill cli 2, first
+      printf("cli 2 killed, killing cli 1..\n");
+      if (kill(ri.plr1pid, SIGTERM) == -1){
+        printf("sighandler: kill error: %d: %s\n", errno, strerror(errno));
+      } //kill cli 1, second
+    }else{
+      if (kill(ri.plr1pid, SIGTERM) == -1){
+        printf("sighandler: kill error: %d: %s\n", errno, strerror(errno));
+      } //kill cli 1, first
+      printf("cli 1 killed, killing cli2..\n");
+      if (kill(ri.plr2pid, SIGTERM) == -1){
+        printf("sighandler: kill error: %d: %s\n", errno, strerror(errno));
+      } //kill cli 2, second
+    }
   }
 }
 

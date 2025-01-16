@@ -15,6 +15,7 @@ static void sighandler(int signo){
   if (signo == SIGINT){
     printf("sigint detected!\n");
     if (getpid() == ri.plr1pid){
+      printf("you are client 1\n");
       if (kill(ri.plr2pid, SIGTERM) == -1){
         printf("sighandler: kill error: %d: %s\n", errno, strerror(errno));
       } //kill cli 2, first
@@ -23,6 +24,7 @@ static void sighandler(int signo){
         printf("sighandler: kill error: %d: %s\n", errno, strerror(errno));
       } //kill cli 1, second
     }else{
+      printf("you are client 2\n");
       if (kill(ri.plr1pid, SIGTERM) == -1){
         printf("sighandler: kill error: %d: %s\n", errno, strerror(errno));
       } //kill cli 1, first

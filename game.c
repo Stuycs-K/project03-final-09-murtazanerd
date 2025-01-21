@@ -363,7 +363,7 @@ int chooseBullet(int lives, int blanks){
 void playRound(int plrNum, struct roundInfo ri, int sameTurn){
   //check if someone is dead
   if (ri.plr1hp == 0 || ri.plr2hp == 0){
-    if (plrNum != ri.turn){ //winner
+    if (plrNum == ri.turn){ //winner
       printf("The monitor beeps.\n");
       sleep(1);
       if (plrNum == 0){

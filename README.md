@@ -13,7 +13,8 @@ As for what Buckshot Roulette is, it is a turn-based table-top game where you an
   
 ### Instructions:
 
-WIPWIPWIPWIPWIP
-
-How does the user install/compile/run the program.
-How does the user interact with this program?
+make compile + make run will play the program.  
+make clean to delete the wkp  
+the program tells you how to interact. if lost type something random and a failsafe should appear, telling you your options. [NOT THOROUGHLY TESTED]  
+type + enter to submit a command/action (i.e SHOOT)  
+everything is case sensitive.

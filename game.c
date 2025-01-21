@@ -323,6 +323,8 @@ void gameOver(){
   printf("Thank you for playing my version of Buckshot Roulette!\n");
   sleep(1);
   printf("Hope you had at least a little bit of fun.\n");
+  sleep(3);
+  kill(getpid(), SIGTERM);
   return;
 }
 

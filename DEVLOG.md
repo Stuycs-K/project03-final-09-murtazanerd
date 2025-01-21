@@ -64,3 +64,11 @@ Adjustments to dialouge time. `(10 min)`
 Attempting signal handling, successfully got signal throwback to one client but not to the other. `(41 min)`  
 `2:10 - 2:50 (class)`  
 Attempted signal handling. Made some progress. Stuck on clients sending pid information to each other without blocking. `(41 min)`
+
+### 2025-01-17 - 2025-01-20  
+The project was done by this point, so I did nothing. However, I did try signal handling a couple of times, just for it all to be janky and not work. `(~3 hours in all that time)`  
+
+### 2025-01-21  
+`???`  
+Finished project video, final tweaks, and now finishing devlog and proposal.  
+This was a very fun project. I loved it.
